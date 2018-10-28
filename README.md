@@ -1,3 +1,5 @@
+This app was forked from the google tensorflow codelab, see desc below:
+
 # Overview
 
 This repo contains code for the "TensorFlow for poets 2" series of codelabs.
