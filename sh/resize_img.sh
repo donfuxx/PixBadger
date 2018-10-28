@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TF_PATH="../tf_files/training_photos"
+TF_PATH="../tf_files/flower_photos"
 
 cd ${TF_PATH}
 
