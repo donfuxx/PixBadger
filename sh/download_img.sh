@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LABEL="portrait"
+LABEL="animal"
 TF_PATH="../tf_files"
 PHOTO_DIR="flower_photos"
 
@@ -11,7 +11,7 @@ mkdir html/${LABEL}
 mkdir ${PHOTO_DIR}/${LABEL}
 
 echo "get all pages"
-curl "https://pixabay.com/en/photos/?q=${LABEL}&pagi=[1-3]" -o "html/${LABEL}/#1.html"
+curl "https://pixabay.com/en/photos/?q=${LABEL}&pagi=[1-100]" -o "html/${LABEL}/#1.html"
 
 cd html/${LABEL}
 
