@@ -1132,6 +1132,9 @@ def main(_):
           tf.logging.info('%70s  %s' %
                           (test_filename,
                            list(image_lists.keys())[predictions[i]]))
+          file = open("tf_files/training_reports/misclassified_test_images.txt","a")
+          file.write(test_filename + " \t" + list(image_lists.keys())[test_ground_truth[i].argmax()] + " \t" + list(image_lists.keys())[predictions[i]] + "\n")
+          file.close()
 
     # Write out the trained graph and labels with the weights stored as
     # constants.
