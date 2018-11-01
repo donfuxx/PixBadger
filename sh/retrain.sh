@@ -13,6 +13,8 @@ echo "retraining model ${TF_PATH} ${ARCHITECTURE} ${STEPS} ${LEARNING_RATE} ${TR
 
 cd ${TF_PATH}
 
+mkdir -p training_reports/misclassified_img
+
 ls
 
 python -um scripts.retrain \
