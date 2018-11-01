@@ -5,10 +5,13 @@ TF_BOTTLENECKS_PATH="../tf_files/bottlenecks"
 
 echo "copy all misclassified images"
 
+count=0
+
 input=${TF_TRAINING_PATH}/misclassified_test_images.txt
 while IFS= read -r var
 do
-  
+
+  ((count++))
   array=($var)
   img_path=${array[0]}
   real_label=${array[1]}
@@ -26,5 +29,8 @@ do
 done < "$input"
 
 rm -f "${input}"
+
+echo "found ${count} misclassified images"
+echo
 
 #$SHELL
