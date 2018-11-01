@@ -15,8 +15,10 @@ do
 
   dest_folder=${TF_TRAINING_PATH}"/misclassified_img/"${real_label}"/"${err_label}
   mkdir -p ${dest_folder}
-  cp -v "../"${img_path} ${dest_folder}
+  mv -v "../"${img_path} ${dest_folder}
 
 done < "$input"
+
+rm ${input}
 
 #$SHELL
