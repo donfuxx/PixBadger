@@ -16,18 +16,9 @@ import java.io.File
 
 class MainActivity : Activity() {
 
-    companion object {
-        const val MODEL_PATH = "graph.lite"
-        const val LABEL_PATH = "labels.txt"
-        const val INPUT_SIZE = 224
-    }
-
     private val imageClassifier by lazy {
-        TensorFlowImageClassifier.create(
-                assets,
-                MODEL_PATH,
-                LABEL_PATH,
-                INPUT_SIZE)
+        TensorFlowImageClassifier.getInstance(this)
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

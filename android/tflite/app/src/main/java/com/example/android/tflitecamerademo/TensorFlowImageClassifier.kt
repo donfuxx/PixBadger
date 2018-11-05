@@ -1,6 +1,7 @@
 package com.example.android.tflitecamerademo
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.os.SystemClock
@@ -16,11 +17,15 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
 
-class TensorFlowImageClassifier private constructor() : Classifier {
+class TensorFlowImageClassifier private constructor(private val context: Context) : Classifier {
 
-    private lateinit var interpreter: Interpreter
-    private var inputSize: Int = 0
-    private lateinit var labelList: List<String>
+    private val interpreter: Interpreter by lazy {
+        Interpreter(loadModelFile(context.assets, MODEL_PATH))
+    }
+
+    private val labelList: List<String> by lazy {
+        loadLabelList(context.assets, LABEL_PATH)
+    }
 
     override fun recognizeImage(bitmap: Bitmap): List<Classifier.Recognition> {
         val byteBuffer = convertBitmapToByteBuffer(bitmap)
@@ -65,13 +70,13 @@ class TensorFlowImageClassifier private constructor() : Classifier {
     }
 
     private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
-        val byteBuffer = ByteBuffer.allocateDirect(4 * BATCH_SIZE * inputSize * inputSize * PIXEL_SIZE)
+        val byteBuffer = ByteBuffer.allocateDirect(4 * BATCH_SIZE * INPUT_SIZE * INPUT_SIZE * PIXEL_SIZE)
         byteBuffer.order(ByteOrder.nativeOrder())
-        val intValues = IntArray(inputSize * inputSize)
+        val intValues = IntArray(INPUT_SIZE * INPUT_SIZE)
         bitmap.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
         var pixel = 0
-        for (i in 0 until inputSize) {
-            for (j in 0 until inputSize) {
+        for (i in 0 until INPUT_SIZE) {
+            for (j in 0 until INPUT_SIZE) {
                 val `val` = intValues[pixel++]
                 byteBuffer.putFloat(((`val` shr 16 and 0xFF) - IMAGE_MEAN) / IMAGE_STD)
                 byteBuffer.putFloat(((`val` shr 8 and 0xFF) - IMAGE_MEAN) / IMAGE_STD)
@@ -107,29 +112,16 @@ class TensorFlowImageClassifier private constructor() : Classifier {
         return recognitions
     }
 
-    companion object {
-
+    companion object : SingletonHolder<TensorFlowImageClassifier, Context>(::TensorFlowImageClassifier) {
         private const val MAX_RESULTS = 3
         private const val BATCH_SIZE = 1
         private const val PIXEL_SIZE = 3
         private const val THRESHOLD = 0.1f
-
         private const val IMAGE_MEAN = 128
         private const val IMAGE_STD = 128.0f
-
-        @Throws(IOException::class)
-        fun create(assetManager: AssetManager,
-                   modelPath: String,
-                   labelPath: String,
-                   inputSize: Int): Classifier {
-
-            val classifier = TensorFlowImageClassifier()
-            classifier.interpreter = Interpreter(classifier.loadModelFile(assetManager, modelPath))
-            classifier.labelList = classifier.loadLabelList(assetManager, labelPath)
-            classifier.inputSize = inputSize
-
-            return classifier
-        }
+        private const val MODEL_PATH = "graph.lite"
+        private const val LABEL_PATH = "labels.txt"
+        private const val INPUT_SIZE = 224
     }
 
 }
