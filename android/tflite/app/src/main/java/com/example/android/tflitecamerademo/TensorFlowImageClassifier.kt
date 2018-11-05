@@ -18,9 +18,9 @@ import java.util.*
 
 class TensorFlowImageClassifier private constructor() : Classifier {
 
-    private var interpreter: Interpreter? = null
+    private lateinit var interpreter: Interpreter
     private var inputSize: Int = 0
-    private var labelList: List<String>? = null
+    private lateinit var labelList: List<String>
 
     override fun recognizeImage(bitmap: Bitmap): List<Classifier.Recognition> {
         val byteBuffer = convertBitmapToByteBuffer(bitmap)
@@ -28,7 +28,7 @@ class TensorFlowImageClassifier private constructor() : Classifier {
 
         val startTime = SystemClock.uptimeMillis()
 
-        interpreter!!.run(byteBuffer, result)
+        interpreter.run(byteBuffer, result)
 
         val endTime = SystemClock.uptimeMillis()
         val runTime = (endTime - startTime).toString()
@@ -38,8 +38,7 @@ class TensorFlowImageClassifier private constructor() : Classifier {
     }
 
     override fun close() {
-        interpreter!!.close()
-        interpreter = null
+        interpreter.close()
     }
 
     @Throws(IOException::class)
@@ -88,13 +87,13 @@ class TensorFlowImageClassifier private constructor() : Classifier {
                 MAX_RESULTS,
                 Comparator<Classifier.Recognition> { lhs, rhs -> java.lang.Float.compare(rhs.confidence!!, lhs.confidence!!) })
 
-        for (i in labelList!!.indices) {
+        for (i in labelList.indices) {
             val confidence = labelProbArray[0][i] * 100 / 127.0f
 
             // Pass through 0.1 (10%) or more
             if (confidence > THRESHOLD) {
                 pq.add(Classifier.Recognition("" + i,
-                        if (labelList!!.size > i) labelList!![i] else "unknown",
+                        if (labelList.size > i) labelList[i] else "unknown",
                         confidence))
             }
         }
