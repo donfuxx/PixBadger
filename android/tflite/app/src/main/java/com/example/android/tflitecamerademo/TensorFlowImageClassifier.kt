@@ -1,6 +1,5 @@
 package com.example.android.tflitecamerademo
 
-import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.res.AssetManager
 import android.graphics.Bitmap
@@ -83,7 +82,6 @@ class TensorFlowImageClassifier private constructor() : Classifier {
         return byteBuffer
     }
 
-    @SuppressLint("DefaultLocale")
     private fun getSortedResult(labelProbArray: Array<FloatArray>): List<Classifier.Recognition> {
 
         val pq = PriorityQueue(
@@ -112,13 +110,13 @@ class TensorFlowImageClassifier private constructor() : Classifier {
 
     companion object {
 
-        private val MAX_RESULTS = 3
-        private val BATCH_SIZE = 1
-        private val PIXEL_SIZE = 3
-        private val THRESHOLD = 0.1f
+        private const val MAX_RESULTS = 3
+        private const val BATCH_SIZE = 1
+        private const val PIXEL_SIZE = 3
+        private const val THRESHOLD = 0.1f
 
-        private val IMAGE_MEAN = 128
-        private val IMAGE_STD = 128.0f
+        private const val IMAGE_MEAN = 128
+        private const val IMAGE_STD = 128.0f
 
         @Throws(IOException::class)
         fun create(assetManager: AssetManager,
