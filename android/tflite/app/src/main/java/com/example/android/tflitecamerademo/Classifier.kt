@@ -17,7 +17,11 @@ interface Classifier {
             /**
              * A sortable score for how good the recognition is relative to others. Higher should be better.
              */
-            val confidence: Float?) {
+            val confidence: Float?,
+            /**
+             * The path to the image
+             */
+            val path: String?) {
 
         override fun toString(): String {
             var resultString = ""
@@ -38,7 +42,7 @@ interface Classifier {
     }
 
 
-    fun recognizeImage(bitmap: Bitmap): List<Recognition>
+    fun recognizeImage(bitmap: Bitmap, imgPath: String): List<Recognition>
 
     fun close()
 }

@@ -1,5 +1,6 @@
 package com.example.android.tflitecamerademo
 
+import android.arch.lifecycle.MutableLiveData
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.res.AssetManager
@@ -27,9 +28,11 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         loadLabelList(context.assets, LABEL_PATH)
     }
 
-    override fun recognizeImage(bitmap: Bitmap): List<Classifier.Recognition> {
+    val lastRecognition: MutableLiveData<Classifier.Recognition> = MutableLiveData()
+
+    override fun recognizeImage(bitmap: Bitmap, imgPath: String): List<Classifier.Recognition> {
         val byteBuffer = convertBitmapToByteBuffer(bitmap)
-        val result = Array(1) { FloatArray(labelList!!.size) }
+        val result = Array(1) { FloatArray(labelList.size) }
 
         val startTime = SystemClock.uptimeMillis()
 
@@ -39,7 +42,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         val runTime = (endTime - startTime).toString()
 
         Log.d(TAG, "recognizeImage: " + runTime + "ms")
-        return getSortedResult(result)
+        return getSortedResult(result, imgPath)
     }
 
     override fun close() {
@@ -86,7 +89,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         return byteBuffer
     }
 
-    private fun getSortedResult(labelProbArray: Array<FloatArray>): List<Classifier.Recognition> {
+    private fun getSortedResult(labelProbArray: Array<FloatArray>, imgPath: String): List<Classifier.Recognition> {
 
         val pq = PriorityQueue(
                 MAX_RESULTS,
@@ -99,7 +102,15 @@ class TensorFlowImageClassifier private constructor(private val context: Context
             if (confidence > THRESHOLD) {
                 pq.add(Classifier.Recognition("" + i,
                         if (labelList.size > i) labelList[i] else "unknown",
-                        confidence))
+                        confidence,
+                        imgPath))
+
+                val recognition = Classifier.Recognition("" + i,
+                        if (labelList.size > i) labelList[i] else "unknown",
+                        confidence,
+                        imgPath)
+
+                lastRecognition.postValue(recognition)
             }
         }
 

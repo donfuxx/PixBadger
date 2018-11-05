@@ -16,7 +16,7 @@ object Utils {
 
             if (bitmap != null) {
                 val scaledBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false)
-                Log.d(javaClass.name, imageClassifier.recognizeImage(scaledBitmap).toString())
+                Log.d(javaClass.name, imageClassifier.recognizeImage(scaledBitmap, file.absolutePath).toString())
                 scaledBitmap.recycle()
                 bitmap.recycle()
             }

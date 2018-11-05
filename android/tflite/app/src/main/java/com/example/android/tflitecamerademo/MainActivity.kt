@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import io.reactivex.disposables.Disposable
 
-
 class MainActivity : AppCompatActivity() {
 
     private val imageClassifier by lazy {
@@ -25,6 +24,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        addFragment(ImgListFragment(), R.id.frameImgList)
+
         if (isStoragePermissionGranted()) {
             imgFilesDisposable = viewModel.observeImgFiles(imageClassifier)
         }
