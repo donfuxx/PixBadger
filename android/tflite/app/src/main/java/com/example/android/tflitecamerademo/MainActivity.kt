@@ -18,14 +18,19 @@ class MainActivity : Activity() {
 
     private val imageClassifier by lazy {
         TensorFlowImageClassifier.getInstance(this)
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         if (isStoragePermissionGranted()) {
-            Log.v(javaClass.name,"Permission is granted")
+            observeImgFiles()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == STORAGE_PERMISSION_RC && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.v(javaClass.name, "Permission: " + permissions[0] + "was " + grantResults[0])
             observeImgFiles()
         }
     }
@@ -37,38 +42,32 @@ class MainActivity : Activity() {
                 .subscribe()
     }
 
-    fun getImgFiles(): List<File> {
+    private fun getImgFiles(): List<File> {
         val pixDir = getExternalStoragePublicDirectory(DIRECTORY_PICTURES)
         Log.d(javaClass.name, "getImgFiles: ${pixDir.listFiles()[0].listFiles()}")
         return pixDir.listFiles()[0].listFiles().toList()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.v(javaClass.name, "Permission: " + permissions[0] + "was " + grantResults[0])
-            //resume tasks needing this permission
-            observeImgFiles()
-        }
-    }
-
     private fun isStoragePermissionGranted(): Boolean {
         return if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                Log.v(javaClass.name, "Permission is granted")
+                Log.v(javaClass.name, "Storage permission is granted")
                 true
             } else {
-
-                Log.v(javaClass.name, "Permission is revoked")
+                Log.v(javaClass.name, "Storage permission is revoked")
                 ActivityCompat.requestPermissions(this,
-                        arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        1)
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        STORAGE_PERMISSION_RC)
                 false
             }
         } else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(javaClass.name, "Permission is granted")
+            Log.v(javaClass.name, "Storage permission is granted")
             true
         }
+    }
+
+    companion object {
+        const val STORAGE_PERMISSION_RC = 0
     }
 
 }
