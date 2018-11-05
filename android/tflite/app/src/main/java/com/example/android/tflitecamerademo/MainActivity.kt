@@ -1,29 +1,32 @@
 package com.example.android.tflitecamerademo
 
 import android.Manifest
-import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment.DIRECTORY_PICTURES
-import android.os.Environment.getExternalStoragePublicDirectory
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import java.io.File
+import io.reactivex.disposables.Disposable
 
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity() {
 
     private val imageClassifier by lazy {
         TensorFlowImageClassifier.getInstance(this)
     }
 
+    private val viewModel by lazy {
+        ViewModelProviders.of(this).get(ImageScanViewModel::class.java)
+    }
+
+    private lateinit var imgFilesDisposable: Disposable
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (isStoragePermissionGranted()) {
-            observeImgFiles()
+            imgFilesDisposable = viewModel.observeImgFiles(imageClassifier)
         }
     }
 
@@ -31,21 +34,13 @@ class MainActivity : Activity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == STORAGE_PERMISSION_RC && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.v(javaClass.name, "Permission: " + permissions[0] + "was " + grantResults[0])
-            observeImgFiles()
+            imgFilesDisposable = viewModel.observeImgFiles(imageClassifier)
         }
     }
 
-    private fun observeImgFiles() {
-        Observable.fromIterable(getImgFiles())
-                .doOnNext { Utils.loadImage(it, imageClassifier) }
-                .subscribeOn(Schedulers.io())
-                .subscribe()
-    }
-
-    private fun getImgFiles(): List<File> {
-        val pixDir = getExternalStoragePublicDirectory(DIRECTORY_PICTURES)
-        Log.d(javaClass.name, "getImgFiles: ${pixDir.listFiles()[0].listFiles()}")
-        return pixDir.listFiles()[0].listFiles().toList()
+    override fun onDestroy() {
+        imgFilesDisposable.takeIf { !it.isDisposed }?.apply { dispose() }
+        super.onDestroy()
     }
 
     private fun isStoragePermissionGranted(): Boolean {

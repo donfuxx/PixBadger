@@ -121,7 +121,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         private const val IMAGE_STD = 128.0f
         private const val MODEL_PATH = "graph.lite"
         private const val LABEL_PATH = "labels.txt"
-        private const val INPUT_SIZE = 224
+        const val INPUT_SIZE = 224
     }
 
 }
