@@ -12,7 +12,7 @@ import java.io.File
 
 class ImageScanViewModel : ViewModel() {
 
-    private var lastRecognition: MutableLiveData<Classifier.Recognition> = MutableLiveData()
+    private var lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
     fun observeImgFiles(imageClassifier: TensorFlowImageClassifier): Disposable {
         lastRecognition = imageClassifier.lastRecognition
@@ -22,7 +22,7 @@ class ImageScanViewModel : ViewModel() {
                 .subscribe()
     }
 
-    fun getLatestImage(): LiveData<Classifier.Recognition> {
+    fun getLatestImage(): LiveData<Img> {
         return lastRecognition
     }
 

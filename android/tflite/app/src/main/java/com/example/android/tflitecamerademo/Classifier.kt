@@ -17,11 +17,7 @@ interface Classifier {
             /**
              * A sortable score for how good the recognition is relative to others. Higher should be better.
              */
-            val confidence: Float?,
-            /**
-             * The path to the image
-             */
-            val path: String?) {
+            val confidence: Float?) {
 
         override fun toString(): String {
             var resultString = ""

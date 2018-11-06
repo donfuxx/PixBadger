@@ -28,7 +28,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         loadLabelList(context.assets, LABEL_PATH)
     }
 
-    val lastRecognition: MutableLiveData<Classifier.Recognition> = MutableLiveData()
+    val lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
     override fun recognizeImage(bitmap: Bitmap, imgPath: String): List<Classifier.Recognition> {
         val byteBuffer = convertBitmapToByteBuffer(bitmap)
@@ -42,7 +42,11 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         val runTime = (endTime - startTime).toString()
 
         Log.d(TAG, "recognizeImage: " + runTime + "ms")
-        return getSortedResult(result, imgPath)
+
+        val recognitions = getSortedResult(result)
+        val img = Img(imgPath, recognitions)
+        lastRecognition.postValue(img)
+        return recognitions
     }
 
     override fun close() {
@@ -89,7 +93,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         return byteBuffer
     }
 
-    private fun getSortedResult(labelProbArray: Array<FloatArray>, imgPath: String): List<Classifier.Recognition> {
+    private fun getSortedResult(labelProbArray: Array<FloatArray>): List<Classifier.Recognition> {
 
         val pq = PriorityQueue(
                 MAX_RESULTS,
@@ -102,15 +106,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
             if (confidence > THRESHOLD) {
                 pq.add(Classifier.Recognition("" + i,
                         if (labelList.size > i) labelList[i] else "unknown",
-                        confidence,
-                        imgPath))
-
-                val recognition = Classifier.Recognition("" + i,
-                        if (labelList.size > i) labelList[i] else "unknown",
-                        confidence,
-                        imgPath)
-
-                lastRecognition.postValue(recognition)
+                        confidence))
             }
         }
 

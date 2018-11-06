@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 
-class ImgAdapter(val images: MutableList<Classifier.Recognition>) : RecyclerView.Adapter<ImgHolder>() {
+class ImgAdapter(val images: MutableList<Img>) : RecyclerView.Adapter<ImgHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImgHolder {
         return ImgHolder(LayoutInflater.from(parent.context)
@@ -16,6 +16,7 @@ class ImgAdapter(val images: MutableList<Classifier.Recognition>) : RecyclerView
     }
 
     override fun onBindViewHolder(holder: ImgHolder, position: Int) {
-        holder.txtLabel.text = images.takeIf { position < it.size}?.get(position)?.title ?: "unknown"
+        holder.txtLabel.text = images.takeIf { position < it.size}?.get(position)?.recognition?.toString()
+                ?: "unknown"
     }
 }
