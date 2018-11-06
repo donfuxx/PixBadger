@@ -1,6 +1,7 @@
 package com.example.android.tflitecamerademo
 
 import android.graphics.Bitmap
+import java.io.File
 
 interface Classifier {
 
@@ -38,7 +39,7 @@ interface Classifier {
     }
 
 
-    fun recognizeImage(bitmap: Bitmap, imgPath: String): List<Recognition>
+    fun recognizeImage(bitmap: Bitmap, file: File): List<Recognition>
 
     fun close()
 }

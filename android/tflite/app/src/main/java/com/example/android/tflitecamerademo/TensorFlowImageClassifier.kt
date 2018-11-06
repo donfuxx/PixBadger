@@ -8,10 +8,7 @@ import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
 import org.tensorflow.lite.Interpreter
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStreamReader
+import java.io.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
@@ -30,7 +27,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
 
     val lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
-    override fun recognizeImage(bitmap: Bitmap, imgPath: String): List<Classifier.Recognition> {
+    override fun recognizeImage(bitmap: Bitmap, file: File): List<Classifier.Recognition> {
         val byteBuffer = convertBitmapToByteBuffer(bitmap)
         val result = Array(1) { FloatArray(labelList.size) }
 
@@ -44,7 +41,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         Log.d(TAG, "recognizeImage: " + runTime + "ms")
 
         val recognitions = getSortedResult(result)
-        val img = Img(imgPath, recognitions)
+        val img = Img(file, recognitions)
         lastRecognition.postValue(img)
         return recognitions
     }

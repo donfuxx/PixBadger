@@ -3,6 +3,7 @@ package com.example.android.tflitecamerademo
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.squareup.picasso.Picasso
 
 class ImgAdapter(val images: MutableList<Img>) : RecyclerView.Adapter<ImgHolder>() {
 
@@ -16,7 +17,17 @@ class ImgAdapter(val images: MutableList<Img>) : RecyclerView.Adapter<ImgHolder>
     }
 
     override fun onBindViewHolder(holder: ImgHolder, position: Int) {
-        holder.txtLabel.text = images.takeIf { position < it.size}?.get(position)?.recognition?.toString()
-                ?: "unknown"
+
+        images.takeIf { position < it.size }?.get(position)?.let {
+            holder.txtLabel.text = it.recognition.toString()
+
+            Picasso.get().load(it.file)
+                    .resize(100, 100)
+                    .onlyScaleDown()
+                    .centerInside()
+                    .placeholder(R.drawable.ic_launcher)
+                    .into(holder.imgItem)
+        }
+
     }
 }

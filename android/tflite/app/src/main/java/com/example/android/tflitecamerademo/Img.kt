@@ -1,3 +1,5 @@
 package com.example.android.tflitecamerademo
 
-data class Img(val path: String, val recognition: List<Classifier.Recognition>)
+import java.io.File
+
+data class Img(val file: File, val recognition: List<Classifier.Recognition>)
