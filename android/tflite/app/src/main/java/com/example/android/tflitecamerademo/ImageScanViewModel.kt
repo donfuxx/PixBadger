@@ -4,10 +4,10 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.os.Environment
-import android.util.Log
-import io.reactivex.Observable
+import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import java.io.File
 
 class ImageScanViewModel : ViewModel() {
@@ -16,10 +16,27 @@ class ImageScanViewModel : ViewModel() {
 
     fun observeImgFiles(imageClassifier: TensorFlowImageClassifier): Disposable {
         lastRecognition = imageClassifier.lastRecognition
-        return Observable.fromIterable(getImgFiles())
-                .doOnNext { loadImage(it, imageClassifier) }
+
+        val imgSubject: PublishSubject<File> = PublishSubject.create<File>()
+
+        val disposable = imgSubject.doOnNext { loadImage(it, imageClassifier) }
                 .subscribeOn(Schedulers.computation())
                 .subscribe()
+
+        Completable.fromAction { postFiles(imgSubject, Environment.getExternalStorageDirectory()) }
+                .subscribeOn(Schedulers.computation()).subscribe()
+
+        return disposable
+    }
+
+    private fun postFiles(imgSubject: PublishSubject<File>, dir: File) {
+        for (file in dir.listFiles()) {
+            if (file.isDirectory) {
+                postFiles(imgSubject, file)
+            } else if (file.name.endsWith(".jpg")) {
+                imgSubject.onNext(file)
+            }
+        }
     }
 
     fun getLatestImage(): LiveData<Img> {
@@ -30,9 +47,4 @@ class ImageScanViewModel : ViewModel() {
         Utils.loadImage(it, imageClassifier)
     }
 
-    private fun getImgFiles(): List<File> {
-        val pixDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-        Log.d(javaClass.name, "getImgFiles: ${pixDir.listFiles()[0].listFiles()}")
-        return pixDir.listFiles()[0].listFiles().toList()
-    }
 }

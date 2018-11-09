@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +40,10 @@ class ImgListFragment : Fragment() {
         imgList.adapter = imgAdapter
 
         viewModel.getLatestImage().observe(this, Observer { recognition ->
-            recognition?.let {imgAdapter.images.add(it)}.let { imgAdapter.notifyDataSetChanged() }
+            recognition?.let {
+                Log.d(this.javaClass.name, "image observed: $it")
+                imgAdapter.images.add(it)
+            }.let { imgAdapter.notifyDataSetChanged() }
         })
 
         super.onViewCreated(view, savedInstanceState)

@@ -1,7 +1,6 @@
 package com.example.android.tflitecamerademo
 
 import android.arch.lifecycle.MutableLiveData
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
@@ -38,7 +37,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         val endTime = SystemClock.uptimeMillis()
         val runTime = (endTime - startTime).toString()
 
-        Log.d(TAG, "recognizeImage: " + runTime + "ms")
+        Log.d(javaClass.name, "recognizeImage: " + runTime + "ms")
 
         val recognitions = getSortedResult(result)
         val img = Img(file, recognitions)
