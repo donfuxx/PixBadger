@@ -18,7 +18,11 @@ interface Classifier {
             /**
              * A sortable score for how good the recognition is relative to others. Higher should be better.
              */
-            val confidence: Float?) {
+            val confidence: Float?,
+            /**
+             * The time required to classify the image
+             */
+            val time: String) {
 
         override fun toString(): String {
             var resultString = ""
@@ -33,6 +37,8 @@ interface Classifier {
             if (confidence != null) {
                 resultString += String.format("(%.1f%%) ", confidence * 100.0f)
             }
+
+            resultString += " $time"
 
             return resultString.trim { it <= ' ' }
         }

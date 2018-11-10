@@ -39,7 +39,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
 
         Log.d(javaClass.name, "recognizeImage: " + runTime + "ms")
 
-        val recognitions = getSortedResult(result)
+        val recognitions = getSortedResult(result, runTime)
         val img = Img(file, recognitions)
         lastRecognition.postValue(img)
         return recognitions
@@ -89,7 +89,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         return byteBuffer
     }
 
-    private fun getSortedResult(labelProbArray: Array<FloatArray>): List<Classifier.Recognition> {
+    private fun getSortedResult(labelProbArray: Array<FloatArray>, runTime: String): List<Classifier.Recognition> {
 
         val pq = PriorityQueue(
                 MAX_RESULTS,
@@ -102,7 +102,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
             if (confidence > THRESHOLD) {
                 pq.add(Classifier.Recognition("" + i,
                         if (labelList.size > i) labelList[i] else "unknown",
-                        confidence))
+                        confidence, runTime))
             }
         }
 
