@@ -10,7 +10,7 @@ android_binary(
         "@tflite_mobilenet//:mobilenet_quant_v1_224.tflite",
     ],
     assets_dir = "",
-    custom_package = "com.example.android.tflitecamerademo",
+    custom_package = "com.appham.tflitecamerademo",
     manifest = "AndroidManifest.xml",
     nocompress_extensions = [
         ".tflite",
