@@ -44,8 +44,9 @@ class ImgListFragment : Fragment() {
                 Log.d(this.javaClass.name, "image observed: $it")
                 imgAdapter.images.add(it)
             }.let {
-                imgAdapter.notifyDataSetChanged()
-                imgList.scrollToPosition(imgAdapter.images.size - 1)
+                val postition = imgAdapter.images.size - 1
+                imgAdapter.notifyItemChanged(postition)
+                imgList.scrollToPosition(postition)
             }
         })
 
