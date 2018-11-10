@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import io.reactivex.disposables.Disposable
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,8 +19,6 @@ class MainActivity : AppCompatActivity() {
         ViewModelProviders.of(this).get(ImageScanViewModel::class.java)
     }
 
-    private lateinit var imgFilesDisposable: Disposable
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -29,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         replaceFragment(ImgListFragment(), R.id.frameImgList)
 
         if (isStoragePermissionGranted()) {
-            imgFilesDisposable = viewModel.observeImgFiles(imageClassifier)
+            viewModel.observeImgFiles(imageClassifier)
         }
     }
 
@@ -37,13 +34,8 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == STORAGE_PERMISSION_RC && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.v(javaClass.name, "Permission: " + permissions[0] + "was " + grantResults[0])
-            imgFilesDisposable = viewModel.observeImgFiles(imageClassifier)
+            viewModel.observeImgFiles(imageClassifier)
         }
-    }
-
-    override fun onDestroy() {
-        imgFilesDisposable.takeIf { !it.isDisposed }?.apply { dispose() }
-        super.onDestroy()
     }
 
     private fun isStoragePermissionGranted(): Boolean {

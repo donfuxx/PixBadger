@@ -6,7 +6,7 @@ import android.arch.lifecycle.ViewModel
 import android.os.Environment
 import android.os.Trace
 import io.reactivex.Completable
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.io.File
@@ -17,20 +17,20 @@ class ImageScanViewModel : ViewModel() {
 
     private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()
 
-    fun observeImgFiles(imageClassifier: TensorFlowImageClassifier): Disposable {
+    private val disposables = CompositeDisposable()
+
+    fun observeImgFiles(imageClassifier: TensorFlowImageClassifier) {
         lastRecognition = imageClassifier.lastRecognition
 
         Trace.beginSection("img-scan")
         val imgSubject: PublishSubject<File> = PublishSubject.create<File>()
 
-        val disposable = imgSubject.doOnNext { loadImage(it, imageClassifier) }
+        disposables.add(imgSubject.doOnNext { loadImage(it, imageClassifier) }
                 .subscribeOn(Schedulers.computation())
-                .subscribe()
+                .subscribe())
 
-        Completable.fromAction { postFiles(imgSubject, Environment.getExternalStorageDirectory()) }
-                .subscribeOn(Schedulers.computation()).subscribe()
-
-        return disposable
+        disposables.add(Completable.fromAction { postFiles(imgSubject, Environment.getExternalStorageDirectory()) }
+                .subscribeOn(Schedulers.computation()).subscribe())
     }
 
     private fun postFiles(imgSubject: PublishSubject<File>, dir: File) {
@@ -55,5 +55,9 @@ class ImageScanViewModel : ViewModel() {
 
     private fun loadImage(it: File, imageClassifier: TensorFlowImageClassifier) {
         Utils.loadImage(it, imageClassifier)
+    }
+
+    override fun onCleared() {
+        disposables.clear()
     }
 }
