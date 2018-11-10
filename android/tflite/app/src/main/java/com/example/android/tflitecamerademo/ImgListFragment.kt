@@ -17,7 +17,7 @@ class ImgListFragment : Fragment() {
         ViewModelProviders.of(activity!!).get(ImageScanViewModel::class.java)
     }
 
-    val imgAdapter by lazy {
+    private val imgAdapter by lazy {
         ImgAdapter(mutableListOf())
     }
 
@@ -44,8 +44,9 @@ class ImgListFragment : Fragment() {
                 Log.d(this.javaClass.name, "image observed: $it")
                 imgAdapter.images.add(it)
             }.let {
-                imgAdapter.notifyDataSetChanged()
-                imgList.scrollToPosition(imgAdapter.images.size - 1)
+                val position = imgAdapter.images.size - 1
+                imgAdapter.notifyItemChanged(position)
+                imgList.scrollToPosition(position)
             }
         })
 
