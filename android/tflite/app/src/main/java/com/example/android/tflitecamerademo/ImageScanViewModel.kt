@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.os.Environment
+import android.os.Trace
 import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -14,9 +15,12 @@ class ImageScanViewModel : ViewModel() {
 
     private var lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
+    private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()
+
     fun observeImgFiles(imageClassifier: TensorFlowImageClassifier): Disposable {
         lastRecognition = imageClassifier.lastRecognition
 
+        Trace.beginSection("img-scan")
         val imgSubject: PublishSubject<File> = PublishSubject.create<File>()
 
         val disposable = imgSubject.doOnNext { loadImage(it, imageClassifier) }
@@ -35,12 +39,18 @@ class ImageScanViewModel : ViewModel() {
                 postFiles(imgSubject, file)
             } else if (file.name.endsWith(".jpg")) {
                 imgSubject.onNext(file)
+                endImgScanTime.postValue(System.currentTimeMillis())
             }
         }
+
     }
 
     fun getLatestImage(): LiveData<Img> {
         return lastRecognition
+    }
+
+    fun getEndImgScan(): LiveData<Long> {
+        return endImgScanTime
     }
 
     private fun loadImage(it: File, imageClassifier: TensorFlowImageClassifier) {

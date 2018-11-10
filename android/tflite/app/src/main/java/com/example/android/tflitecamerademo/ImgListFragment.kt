@@ -22,6 +22,10 @@ class ImgListFragment : Fragment() {
         ImgAdapter(mutableListOf())
     }
 
+    private val parentActivity by lazy {
+        activity as AppCompatActivity?
+    }
+
     //region lifecycle methods
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -40,6 +44,8 @@ class ImgListFragment : Fragment() {
 
         imgList.adapter = imgAdapter
 
+        val startImgScanTime = System.currentTimeMillis()
+
         viewModel.getLatestImage().observe(this, Observer { recognition ->
             recognition?.let {
                 Log.d(this.javaClass.name, "image observed: $it")
@@ -49,7 +55,14 @@ class ImgListFragment : Fragment() {
                 imgAdapter.notifyItemChanged(position)
                 imgList.scrollToPosition(position)
 
-                (activity as AppCompatActivity?)?.supportActionBar?.title = "${imgAdapter.images.size} images classified"
+                parentActivity?.supportActionBar?.title = "${imgAdapter.images.size} images classified"
+            }
+        })
+
+        viewModel.getEndImgScan().observe(this, Observer {
+            val elapsedTime = it!! - startImgScanTime
+            parentActivity?.supportActionBar?.title?.let {
+                parentActivity?.supportActionBar?.title = "$it in $elapsedTime ms"
             }
         })
 
