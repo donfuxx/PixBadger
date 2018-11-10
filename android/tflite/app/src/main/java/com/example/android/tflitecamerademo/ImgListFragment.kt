@@ -43,7 +43,10 @@ class ImgListFragment : Fragment() {
             recognition?.let {
                 Log.d(this.javaClass.name, "image observed: $it")
                 imgAdapter.images.add(it)
-            }.let { imgAdapter.notifyDataSetChanged() }
+            }.let {
+                imgAdapter.notifyDataSetChanged()
+                imgList.scrollToPosition(imgAdapter.images.size - 1)
+            }
         })
 
         super.onViewCreated(view, savedInstanceState)
