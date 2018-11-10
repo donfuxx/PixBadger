@@ -56,5 +56,4 @@ class ImageScanViewModel : ViewModel() {
     private fun loadImage(it: File, imageClassifier: TensorFlowImageClassifier) {
         Utils.loadImage(it, imageClassifier)
     }
-
 }

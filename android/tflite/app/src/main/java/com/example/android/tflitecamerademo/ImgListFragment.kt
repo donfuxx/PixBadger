@@ -59,10 +59,11 @@ class ImgListFragment : Fragment() {
             }
         })
 
-        viewModel.getEndImgScan().observe(this, Observer {
-            val elapsedTime = it!! - startImgScanTime
-            parentActivity?.supportActionBar?.title?.let {
-                parentActivity?.supportActionBar?.title = "$it in $elapsedTime ms"
+        viewModel.getEndImgScan().observe(this, Observer { endImgScanTime ->
+            endImgScanTime?.let {
+                val elapsedTime = it - startImgScanTime
+                val timePerImg = elapsedTime / imgAdapter.images.size
+                parentActivity?.supportActionBar?.subtitle = "in $elapsedTime ms - $timePerImg ms per image"
             }
         })
 
