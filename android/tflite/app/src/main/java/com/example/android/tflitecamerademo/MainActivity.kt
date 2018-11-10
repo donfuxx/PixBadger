@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        addFragment(ImgListFragment(), R.id.frameImgList)
+        replaceFragment(ImgListFragment(), R.id.frameImgList)
 
         if (isStoragePermissionGranted()) {
             imgFilesDisposable = viewModel.observeImgFiles(imageClassifier)
