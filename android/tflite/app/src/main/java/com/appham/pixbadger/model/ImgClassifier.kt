@@ -1,9 +1,9 @@
-package com.appham.pixbadger
+package com.appham.pixbadger.model
 
 import android.graphics.Bitmap
 import java.io.File
 
-interface Classifier {
+interface ImgClassifier {
 
     class Recognition(
             /**

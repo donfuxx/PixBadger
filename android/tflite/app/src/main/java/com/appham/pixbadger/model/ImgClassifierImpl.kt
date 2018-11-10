@@ -1,4 +1,4 @@
-package com.example.android.tflitecamerademo
+package com.appham.pixbadger.model
 
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
+import com.appham.pixbadger.util.SingletonHolder
 import org.tensorflow.lite.Interpreter
 import java.io.*
 import java.nio.ByteBuffer
@@ -14,7 +15,7 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
 
-class TensorFlowImageClassifier private constructor(private val context: Context) : Classifier {
+class ImgClassifierImpl private constructor(private val context: Context) : ImgClassifier {
 
     private val interpreter: Interpreter by lazy {
         Interpreter(loadModelFile(context.assets, MODEL_PATH))
@@ -26,7 +27,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
 
     val lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
-    override fun recognizeImage(bitmap: Bitmap, file: File): List<Classifier.Recognition> {
+    override fun recognizeImage(bitmap: Bitmap, file: File): List<ImgClassifier.Recognition> {
         val byteBuffer = convertBitmapToByteBuffer(bitmap)
         val result = Array(1) { FloatArray(labelList.size) }
 
@@ -89,24 +90,24 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         return byteBuffer
     }
 
-    private fun getSortedResult(labelProbArray: Array<FloatArray>, runTime: String): List<Classifier.Recognition> {
+    private fun getSortedResult(labelProbArray: Array<FloatArray>, runTime: String): List<ImgClassifier.Recognition> {
 
         val pq = PriorityQueue(
                 MAX_RESULTS,
-                Comparator<Classifier.Recognition> { lhs, rhs -> java.lang.Float.compare(rhs.confidence!!, lhs.confidence!!) })
+                Comparator<ImgClassifier.Recognition> { lhs, rhs -> java.lang.Float.compare(rhs.confidence!!, lhs.confidence!!) })
 
         for (i in labelList.indices) {
             val confidence = labelProbArray[0][i] * 100 / 127.0f
 
             // Pass through 0.1 (10%) or more
             if (confidence > THRESHOLD) {
-                pq.add(Classifier.Recognition("" + i,
+                pq.add(ImgClassifier.Recognition("" + i,
                         if (labelList.size > i) labelList[i] else "unknown",
                         confidence, runTime))
             }
         }
 
-        val recognitions = ArrayList<Classifier.Recognition>()
+        val recognitions = ArrayList<ImgClassifier.Recognition>()
         val recognitionsSize = Math.min(pq.size, MAX_RESULTS)
         for (i in 0 until recognitionsSize) {
             recognitions.add(pq.poll())
@@ -115,7 +116,7 @@ class TensorFlowImageClassifier private constructor(private val context: Context
         return recognitions
     }
 
-    companion object : SingletonHolder<TensorFlowImageClassifier, Context>(::TensorFlowImageClassifier) {
+    companion object : SingletonHolder<ImgClassifierImpl, Context>(::ImgClassifierImpl) {
         private const val MAX_RESULTS = 3
         private const val BATCH_SIZE = 1
         private const val PIXEL_SIZE = 3

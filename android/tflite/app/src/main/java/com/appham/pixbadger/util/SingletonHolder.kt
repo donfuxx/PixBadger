@@ -1,4 +1,4 @@
-package com.example.android.tflitecamerademo
+package com.appham.pixbadger.util
 
 /**
  * see https://medium.com/@BladeCoder/kotlin-singletons-with-argument-194ef06edd9e

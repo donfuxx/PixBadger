@@ -1,17 +1,20 @@
-package com.example.android.tflitecamerademo
+package com.appham.pixbadger.view
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.os.Environment
 import android.os.Trace
+import com.appham.pixbadger.model.Img
+import com.appham.pixbadger.model.ImgClassifierImpl
+import com.appham.pixbadger.util.Utils
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.io.File
 
-class ImageScanViewModel : ViewModel() {
+class ImgScanViewModel : ViewModel() {
 
     private var lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
@@ -19,7 +22,7 @@ class ImageScanViewModel : ViewModel() {
 
     private val disposables = CompositeDisposable()
 
-    fun observeImgFiles(imageClassifier: TensorFlowImageClassifier) {
+    fun observeImgFiles(imageClassifier: ImgClassifierImpl) {
         lastRecognition = imageClassifier.lastRecognition
 
         Trace.beginSection("img-scan")
@@ -53,7 +56,7 @@ class ImageScanViewModel : ViewModel() {
         return endImgScanTime
     }
 
-    private fun loadImage(it: File, imageClassifier: TensorFlowImageClassifier) {
+    private fun loadImage(it: File, imageClassifier: ImgClassifierImpl) {
         Utils.loadImage(it, imageClassifier)
     }
 

@@ -1,14 +1,15 @@
-package com.example.android.tflitecamerademo
+package com.appham.pixbadger.util
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import com.example.android.tflitecamerademo.TensorFlowImageClassifier.Companion.INPUT_SIZE
+import com.appham.pixbadger.model.ImgClassifier
+import com.appham.pixbadger.model.ImgClassifierImpl.Companion.INPUT_SIZE
 import java.io.File
 
 object Utils {
 
-    fun loadImage(file: File, imageClassifier: Classifier) {
+    fun loadImage(file: File, imageClassifier: ImgClassifier) {
         Log.d(javaClass.name, "load image file: $file " + Thread.currentThread())
 
         if (file.isFile) {

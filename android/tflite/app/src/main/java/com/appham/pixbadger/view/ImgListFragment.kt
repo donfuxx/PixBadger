@@ -1,4 +1,4 @@
-package com.appham.pixbadger
+package com.appham.pixbadger.view
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -11,11 +11,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.appham.pixbadger.R
 
 class ImgListFragment : Fragment() {
 
     private val viewModel by lazy {
-        ViewModelProviders.of(activity!!).get(ImageScanViewModel::class.java)
+        ViewModelProviders.of(activity!!).get(ImgScanViewModel::class.java)
     }
 
     private val imgAdapter by lazy {

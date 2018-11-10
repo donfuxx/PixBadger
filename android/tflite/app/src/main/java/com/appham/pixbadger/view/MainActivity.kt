@@ -1,4 +1,4 @@
-package com.appham.pixbadger
+package com.appham.pixbadger.view
 
 import android.Manifest
 import android.arch.lifecycle.ViewModelProviders
@@ -8,15 +8,18 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import com.appham.pixbadger.R
+import com.appham.pixbadger.model.ImgClassifierImpl
+import com.appham.pixbadger.util.replaceFragment
 
 class MainActivity : AppCompatActivity() {
 
     private val imageClassifier by lazy {
-        TensorFlowImageClassifier.getInstance(this)
+        ImgClassifierImpl.getInstance(this)
     }
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this).get(ImageScanViewModel::class.java)
+        ViewModelProviders.of(this).get(ImgScanViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,8 +1,11 @@
-package com.example.android.tflitecamerademo
+package com.appham.pixbadger.view
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.appham.pixbadger.R
+import com.appham.pixbadger.model.Img
+import com.appham.pixbadger.util.getLabelTexts
 import com.squareup.picasso.Picasso
 
 class ImgAdapter(val images: MutableList<Img>) : RecyclerView.Adapter<ImgHolder>() {

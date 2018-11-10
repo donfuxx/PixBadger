@@ -1,4 +1,4 @@
-package com.appham.pixbadger
+package com.appham.pixbadger.util
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager

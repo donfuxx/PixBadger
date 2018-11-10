@@ -1,6 +1,8 @@
-package com.example.android.tflitecamerademo
+package com.appham.pixbadger.util
 
-fun List<Classifier.Recognition>.getLabelTexts():String {
+import com.appham.pixbadger.model.ImgClassifier
+
+fun List<ImgClassifier.Recognition>.getLabelTexts():String {
     val labelText = StringBuilder()
     labelText.append("recognition time: ")
             .append("${this[0].time} ms")
