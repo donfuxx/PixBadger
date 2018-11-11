@@ -22,6 +22,10 @@ class ImgScanViewModel : ViewModel() {
 
     private val disposables = CompositeDisposable()
 
+    private val imgPattern: Regex by lazy {
+        Regex("(?i).*(jpg|jpeg|png|bmp|gif|tiff)")
+    }
+
     fun observeImgFiles(imageClassifier: ImgClassifierImpl) {
         lastRecognition = imageClassifier.lastRecognition
 
@@ -40,7 +44,7 @@ class ImgScanViewModel : ViewModel() {
         for (file in dir.listFiles()) {
             if (file.isDirectory) {
                 postFiles(imgSubject, file)
-            } else if (file.name.endsWith(".jpg")) {
+            } else if (file.name.matches(imgPattern)) {
                 imgSubject.onNext(file)
                 endImgScanTime.postValue(System.currentTimeMillis())
             }
