@@ -21,14 +21,7 @@ interface ImgClassifier {
             val confidence: Float) {
 
         override fun toString(): String {
-            var resultString = ""
-            resultString += "[$id] "
-
-            resultString += "$title "
-
-            resultString += String.format("(%.1f%%) ", confidence * 100.0f)
-
-            return resultString.trim { it <= ' ' }
+            return ("[$id] $title " + String.format("(%.1f%%) ", confidence * 100.0f)).trim()
         }
     }
 
