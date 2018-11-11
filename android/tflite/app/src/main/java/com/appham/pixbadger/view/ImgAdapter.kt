@@ -6,10 +6,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.Img
-import com.appham.pixbadger.util.getLabelTexts
 import com.squareup.picasso.Picasso
 
-class ImgAdapter(val context: Context, val images: MutableList<Img>) : RecyclerView.Adapter<ImgHolder>() {
+class ImgAdapter(private val context: Context, val images: MutableList<Img>) : RecyclerView.Adapter<ImgHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImgHolder {
         return ImgHolder(LayoutInflater.from(parent.context)
@@ -23,10 +22,7 @@ class ImgAdapter(val context: Context, val images: MutableList<Img>) : RecyclerV
     override fun onBindViewHolder(holder: ImgHolder, position: Int) {
 
         images.takeIf { position < it.size }?.get(position)?.let {
-            holder.txtLabel.text = context.getString(R.string.time_values,
-                    it.times.imgClassifyTime,
-                    it.times.imgResizeTime,
-                    it.recognition.getLabelTexts())
+            holder.txtLabel.text = it.toString(context)
 
             Picasso.get().load(it.file)
                     .resize(100, 100)
