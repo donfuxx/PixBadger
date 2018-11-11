@@ -12,12 +12,15 @@ object Utils {
     fun loadImage(file: File, imageClassifier: ImgClassifier) {
         Log.d(javaClass.name, "load image file: $file " + Thread.currentThread())
 
+        val startTime = System.currentTimeMillis()
+
         if (file.isFile) {
             val bitmap = BitmapFactory.decodeFile(file.absolutePath)
 
             if (bitmap != null) {
                 val scaledBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false)
-                Log.d(javaClass.name, imageClassifier.recognizeImage(scaledBitmap, file).toString())
+                val resizeTime = System.currentTimeMillis() - startTime
+                Log.d(javaClass.name, imageClassifier.recognizeImage(scaledBitmap, file, resizeTime).toString())
                 scaledBitmap.recycle()
                 bitmap.recycle()
             }

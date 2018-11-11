@@ -27,7 +27,7 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
 
     val lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
-    override fun recognizeImage(bitmap: Bitmap, file: File): List<ImgClassifier.Recognition> {
+    override fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): List<ImgClassifier.Recognition> {
         val byteBuffer = convertBitmapToByteBuffer(bitmap)
         val result = Array(1) { FloatArray(labelList.size) }
 
@@ -35,13 +35,12 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
 
         interpreter.run(byteBuffer, result)
 
-        val endTime = SystemClock.uptimeMillis()
-        val runTime = (endTime - startTime).toString()
+        val times = Times(SystemClock.uptimeMillis() - startTime, resizeTime)
 
-        Log.d(javaClass.name, "recognizeImage: " + runTime + "ms")
+        Log.d(javaClass.name, "recognizeImage: ${times.imgClassifyTime} ms")
 
-        val recognitions = getSortedResult(result, runTime)
-        val img = Img(file, recognitions)
+        val recognitions = getSortedResult(result)
+        val img = Img(file, times, recognitions)
         lastRecognition.postValue(img)
         return recognitions
     }
@@ -90,7 +89,7 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
         return byteBuffer
     }
 
-    private fun getSortedResult(labelProbArray: Array<FloatArray>, runTime: String): List<ImgClassifier.Recognition> {
+    private fun getSortedResult(labelProbArray: Array<FloatArray>): List<ImgClassifier.Recognition> {
 
         val pq = PriorityQueue(
                 MAX_RESULTS,
@@ -103,7 +102,7 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
             if (confidence > THRESHOLD) {
                 pq.add(ImgClassifier.Recognition("" + i,
                         if (labelList.size > i) labelList[i] else "unknown",
-                        confidence, runTime))
+                        confidence))
             }
         }
 

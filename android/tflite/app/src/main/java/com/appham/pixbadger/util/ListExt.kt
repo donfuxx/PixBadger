@@ -4,9 +4,6 @@ import com.appham.pixbadger.model.ImgClassifier
 
 fun List<ImgClassifier.Recognition>.getLabelTexts():String {
     val labelText = StringBuilder()
-    labelText.append("recognition time: ")
-            .append("${this[0].time} ms")
-            .append("\n")
     for (recognition in this) {
         labelText.append(recognition.title)
                 .append(": ")

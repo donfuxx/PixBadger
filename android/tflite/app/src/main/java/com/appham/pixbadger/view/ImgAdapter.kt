@@ -22,7 +22,10 @@ class ImgAdapter(val images: MutableList<Img>) : RecyclerView.Adapter<ImgHolder>
     override fun onBindViewHolder(holder: ImgHolder, position: Int) {
 
         images.takeIf { position < it.size }?.get(position)?.let {
-            holder.txtLabel.text = it.recognition.getLabelTexts()
+            val labelText = "${it.times.imgClassifyTime} ms recognition time\n" +
+                    "${it.times.imgResizeTime} ms resize time\n" +
+                    it.recognition.getLabelTexts()
+            holder.txtLabel.text = labelText
 
             Picasso.get().load(it.file)
                     .resize(100, 100)
