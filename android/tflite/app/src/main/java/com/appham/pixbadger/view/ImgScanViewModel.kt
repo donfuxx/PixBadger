@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.os.Environment
-import android.os.Trace
 import com.appham.pixbadger.model.Img
 import com.appham.pixbadger.model.ImgClassifierImpl
 import com.appham.pixbadger.util.Utils
@@ -29,7 +28,6 @@ class ImgScanViewModel : ViewModel() {
     fun observeImgFiles(imageClassifier: ImgClassifierImpl) {
         lastRecognition = imageClassifier.lastRecognition
 
-        Trace.beginSection("img-scan")
         val imgSubject: PublishSubject<File> = PublishSubject.create<File>()
 
         disposables.add(imgSubject.doOnNext { loadImage(it, imageClassifier) }
@@ -37,7 +35,8 @@ class ImgScanViewModel : ViewModel() {
                 .subscribe())
 
         disposables.add(Completable.fromAction { postFiles(imgSubject, Environment.getExternalStorageDirectory()) }
-                .subscribeOn(Schedulers.computation()).subscribe())
+                .subscribeOn(Schedulers.computation())
+                .subscribe())
     }
 
     private fun postFiles(imgSubject: PublishSubject<File>, dir: File) {
@@ -49,7 +48,6 @@ class ImgScanViewModel : ViewModel() {
                 endImgScanTime.postValue(System.currentTimeMillis())
             }
         }
-
     }
 
     fun getLatestImage(): LiveData<Img> {
