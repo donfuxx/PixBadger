@@ -94,7 +94,7 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
 
         val pq = PriorityQueue(
                 MAX_RESULTS,
-                Comparator<ImgClassifier.Recognition> { lhs, rhs -> java.lang.Float.compare(rhs.confidence!!, lhs.confidence!!) })
+                Comparator<ImgClassifier.Recognition> { lhs, rhs -> java.lang.Float.compare(rhs.confidence, lhs.confidence) })
 
         for (i in labelList.indices) {
             val confidence = labelProbArray[0][i] * 100 / 127.0f
