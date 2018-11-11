@@ -20,7 +20,7 @@ class ImgListFragment : Fragment() {
     }
 
     private val imgAdapter by lazy {
-        ImgAdapter(mutableListOf())
+        ImgAdapter(parentActivity!!, mutableListOf())
     }
 
     private val parentActivity by lazy {

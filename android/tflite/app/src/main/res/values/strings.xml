@@ -15,4 +15,5 @@
 -->
 <resources>
     <string name="app_name">PixBadger Android</string>
+    <string name="time_values">%1$d ms classify time \n%2$d ms resize time \n%3$s</string>
 </resources>
