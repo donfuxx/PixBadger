@@ -30,13 +30,14 @@ class ImgScanViewModel : ViewModel() {
 
         val imgSubject: PublishSubject<File> = PublishSubject.create<File>()
 
+        disposables.add(Completable.fromAction { postFiles(imgSubject, Environment.getExternalStorageDirectory()) }
+                .subscribeOn(Schedulers.computation())
+                .subscribe())
+
         disposables.add(imgSubject.doOnNext { loadImage(it, imageClassifier) }
                 .subscribeOn(Schedulers.computation())
                 .subscribe())
 
-        disposables.add(Completable.fromAction { postFiles(imgSubject, Environment.getExternalStorageDirectory()) }
-                .subscribeOn(Schedulers.computation())
-                .subscribe())
     }
 
     private fun postFiles(imgSubject: PublishSubject<File>, dir: File) {
