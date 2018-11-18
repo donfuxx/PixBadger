@@ -1,7 +1,6 @@
 package com.appham.pixbadger.model
 
 import android.graphics.Bitmap
-import java.io.File
 
 interface ImgClassifier {
 
@@ -25,6 +24,6 @@ interface ImgClassifier {
         }
     }
 
-    fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): List<Recognition>
+    fun recognizeImage(img: Pair<Bitmap, Img>)
     fun close()
 }

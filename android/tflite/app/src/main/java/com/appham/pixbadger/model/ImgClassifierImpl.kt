@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.os.SystemClock
-import android.util.Log
 import com.appham.pixbadger.util.SingletonHolder
 import org.tensorflow.lite.Interpreter
-import java.io.*
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStreamReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
@@ -27,22 +29,29 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
 
     val lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
-    override fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): List<ImgClassifier.Recognition> {
-        val byteBuffer = convertBitmapToByteBuffer(bitmap)
+    override fun recognizeImage(img: Pair<Bitmap, Img>) {
+        val byteBuffer = convertBitmapToByteBuffer(img.first)
         val result = Array(1) { FloatArray(labelList.size) }
 
         val startTime = SystemClock.uptimeMillis()
 
         interpreter.run(byteBuffer, result)
 
-        val times = Times(SystemClock.uptimeMillis() - startTime, resizeTime)
+        img.second.times.imgClassifyTime = SystemClock.uptimeMillis() - startTime
 
-        Log.d(javaClass.name, "recognizeImage: ${times.imgClassifyTime} ms")
+        img.second.recognition = getSortedResult(result)
 
-        val recognitions = getSortedResult(result)
-        val img = Img(file, times, recognitions)
-        lastRecognition.postValue(img)
-        return recognitions
+        lastRecognition.postValue(img.second)
+
+//        val times = Times(SystemClock.uptimeMillis() - startTime, resizeTime)
+
+//        Log.d(javaClass.name, "recognizeImage: ${times.imgClassifyTime} ms")
+
+//        val recognitions = getSortedResult(result)
+//        val img = Img(file, times, recognitions)
+
+//        lastRecognition.postValue(img)
+//        return recognitions
     }
 
     override fun close() {

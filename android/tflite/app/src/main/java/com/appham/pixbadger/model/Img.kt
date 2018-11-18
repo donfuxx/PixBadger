@@ -7,7 +7,7 @@ import java.io.File
 
 data class Img(val file: File,
                val times: Times,
-               val recognition: List<ImgClassifier.Recognition>) {
+               var recognition: List<ImgClassifier.Recognition>) {
 
     fun toString(context: Context): String = context.getString(R.string.time_values,
             times.imgClassifyTime,
