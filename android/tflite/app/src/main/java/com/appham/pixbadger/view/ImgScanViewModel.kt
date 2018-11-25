@@ -15,17 +15,21 @@ import java.io.File
 
 class ImgScanViewModel : ViewModel() {
 
-    private var lastRecognition: MutableLiveData<Img> = MutableLiveData()
+    var isScanComplete: Boolean = false;
+
+    val imgList: MutableList<Img> = mutableListOf()
+
+    val startImgScanTime: Long = System.currentTimeMillis()
 
     private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()
+
+    private var lastRecognition: MutableLiveData<Img> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
 
     private val imgPattern: Regex by lazy {
         Regex("(?i).*(jpg|jpeg|png|bmp|gif|tiff)")
     }
-
-    var isScanComplete: Boolean = false;
 
     fun observeImgFiles(imageClassifier: ImgClassifierImpl) {
         lastRecognition = imageClassifier.lastRecognition

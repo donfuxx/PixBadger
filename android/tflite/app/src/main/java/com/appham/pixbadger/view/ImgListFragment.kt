@@ -19,7 +19,7 @@ class ImgListFragment : Fragment() {
     }
 
     private val imgAdapter by lazy {
-        ImgAdapter(parentActivity!!, mutableListOf())
+        ImgAdapter(parentActivity!!, viewModel.imgList)
     }
 
     private val parentActivity by lazy {
@@ -53,8 +53,6 @@ class ImgListFragment : Fragment() {
 
         imgList.adapter = imgAdapter
 
-        val startImgScanTime = System.currentTimeMillis()
-
         imgObserver = Observer { img ->
             img?.let {
                 Log.d(this.javaClass.name, "image observed: $it")
@@ -74,7 +72,7 @@ class ImgListFragment : Fragment() {
 
         viewModel.getEndImgScan().observe(this, Observer { endImgScanTime ->
             endImgScanTime?.let {
-                val elapsedTime = it - startImgScanTime
+                val elapsedTime = it - viewModel.startImgScanTime
                 val timePerImg = elapsedTime / imgAdapter.images.size
                 parentActivity?.supportActionBar?.subtitle = "in $elapsedTime ms - $timePerImg ms per image"
             }
