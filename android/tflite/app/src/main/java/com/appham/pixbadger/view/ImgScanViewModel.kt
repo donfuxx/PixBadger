@@ -2,6 +2,7 @@ package com.appham.pixbadger.view
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.os.Environment
 import com.appham.pixbadger.model.Img
@@ -33,6 +34,14 @@ class ImgScanViewModel : ViewModel() {
         Regex("(?i).*(jpg|jpeg|png|bmp|gif|tiff)")
     }
 
+    private val imgListObserver: Observer<Img> by lazy {
+        Observer<Img> {
+            it?.let {
+                imgList.add(it)
+            }
+        }
+    }
+
     fun observeImgFiles(imageClassifier: ImgClassifierImpl) {
 
         // only start image scan once
@@ -41,6 +50,7 @@ class ImgScanViewModel : ViewModel() {
         }
 
         lastRecognition = imageClassifier.lastRecognition
+        lastRecognition.observeForever(imgListObserver)
 
         val imgSubject: PublishSubject<File> = PublishSubject.create<File>()
 
@@ -82,5 +92,6 @@ class ImgScanViewModel : ViewModel() {
 
     override fun onCleared() {
         disposables.clear()
+        lastRecognition.removeObserver(imgListObserver)
     }
 }

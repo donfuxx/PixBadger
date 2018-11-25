@@ -28,7 +28,22 @@ class ImgListFragment : Fragment() {
 
     private var isPaused = false
 
-    private lateinit var imgObserver: Observer<Img>
+    private val imgObserver: Observer<Img> by lazy {
+        Observer<Img> { img ->
+            img?.let {
+                Log.d(this.javaClass.name, "image observed: $it")
+                val position = imgAdapter.images.size - 1
+                imgAdapter.notifyItemChanged(position)
+                if (!isPaused) {
+                    imgList.scrollToPosition(position)
+                }
+
+                parentActivity?.supportActionBar?.title = "${imgAdapter.images.size} images classified"
+            }
+        }
+    }
+
+    private lateinit var imgList: RecyclerView
 
     //region lifecycle methods
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,30 +58,14 @@ class ImgListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        // get recycler-list of ad results
-        val imgList: RecyclerView = view.findViewById(R.id.listMarks)
+        // get recycler-list of img results
+        imgList = view.findViewById(R.id.listImgs)
         imgList.setHasFixedSize(true)
 
         // use a linear layout manager
-        val imgLayoutManager = LinearLayoutManager(activity)
-        imgList.layoutManager = imgLayoutManager
+        imgList.layoutManager = LinearLayoutManager(activity)
 
         imgList.adapter = imgAdapter
-
-        imgObserver = Observer { img ->
-            img?.let {
-                Log.d(this.javaClass.name, "image observed: $it")
-                imgAdapter.images.add(it)
-            }.let {
-                val position = imgAdapter.images.size - 1
-                imgAdapter.notifyItemChanged(position)
-                if (!isPaused) {
-                    imgList.scrollToPosition(position)
-                }
-
-                parentActivity?.supportActionBar?.title = "${imgAdapter.images.size} images classified"
-            }
-        }
 
         viewModel.getLatestImage().observeForever(imgObserver)
 
