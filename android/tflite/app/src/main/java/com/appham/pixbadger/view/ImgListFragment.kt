@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.appham.pixbadger.R
+import com.appham.pixbadger.model.Img
 
 class ImgListFragment : Fragment() {
 
@@ -26,6 +27,10 @@ class ImgListFragment : Fragment() {
     private val parentActivity by lazy {
         activity as AppCompatActivity?
     }
+
+    private var isPaused = false
+
+    private lateinit var imgObserver: Observer<Img>
 
     //region lifecycle methods
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -47,18 +52,22 @@ class ImgListFragment : Fragment() {
 
         val startImgScanTime = System.currentTimeMillis()
 
-        viewModel.getLatestImage().observe(this, Observer { recognition ->
-            recognition?.let {
+        imgObserver = Observer { img ->
+            img?.let {
                 Log.d(this.javaClass.name, "image observed: $it")
                 imgAdapter.images.add(it)
             }.let {
                 val position = imgAdapter.images.size - 1
                 imgAdapter.notifyItemChanged(position)
-                imgList.scrollToPosition(position)
+                if (!isPaused) {
+                    imgList.scrollToPosition(position)
+                }
 
                 parentActivity?.supportActionBar?.title = "${imgAdapter.images.size} images classified"
             }
-        })
+        }
+
+        viewModel.getLatestImage().observeForever(imgObserver)
 
         viewModel.getEndImgScan().observe(this, Observer { endImgScanTime ->
             endImgScanTime?.let {
@@ -70,5 +79,17 @@ class ImgListFragment : Fragment() {
 
         super.onViewCreated(view, savedInstanceState)
     }
-    //endregion
+
+    override fun onResume() {
+        super.onResume()
+        if (viewModel.isScanComplete) {
+            imgAdapter.notifyDataSetChanged()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.getLatestImage().removeObserver(imgObserver)
+    }
+//endregion
 }
