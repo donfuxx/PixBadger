@@ -8,9 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.Img
 
@@ -33,6 +31,11 @@ class ImgListFragment : Fragment() {
     private lateinit var imgObserver: Observer<Img>
 
     //region lifecycle methods
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_img_list, container, false)
@@ -80,6 +83,18 @@ class ImgListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.menu_img_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_menu_pause -> togglePause(item)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onResume() {
         super.onResume()
         if (viewModel.isScanComplete) {
@@ -91,5 +106,10 @@ class ImgListFragment : Fragment() {
         super.onDestroy()
         viewModel.getLatestImage().removeObserver(imgObserver)
     }
-//endregion
+    //endregion lifecycle methods
+
+    private fun togglePause(item: MenuItem) {
+        isPaused = !isPaused
+        item.setIcon(if (isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause)
+    }
 }
