@@ -108,5 +108,8 @@ class ImgListFragment : Fragment() {
     private fun togglePause(item: MenuItem) {
         isPaused = !isPaused
         item.setIcon(if (isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause)
+        if (viewModel.isScanComplete) {
+            imgAdapter.notifyDataSetChanged()
+        }
     }
 }
