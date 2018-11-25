@@ -15,7 +15,9 @@ import java.io.File
 
 class ImgScanViewModel : ViewModel() {
 
-    var isScanComplete: Boolean = false;
+    var isImgScanStarted: Boolean = false
+
+    var isScanComplete: Boolean = false
 
     val imgList: MutableList<Img> = mutableListOf()
 
@@ -32,6 +34,12 @@ class ImgScanViewModel : ViewModel() {
     }
 
     fun observeImgFiles(imageClassifier: ImgClassifierImpl) {
+
+        // only start image scan once
+        if (isImgScanStarted) {
+            return
+        }
+
         lastRecognition = imageClassifier.lastRecognition
 
         val imgSubject: PublishSubject<File> = PublishSubject.create<File>()
@@ -44,6 +52,8 @@ class ImgScanViewModel : ViewModel() {
                 .subscribeOn(Schedulers.computation())
                 .doOnComplete { isScanComplete = true }
                 .subscribe())
+
+        isImgScanStarted = true
 
     }
 
