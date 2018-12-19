@@ -72,8 +72,10 @@ class ImgListFragment : Fragment() {
         viewModel.getEndImgScan().observe(this, Observer { endImgScanTime ->
             endImgScanTime?.let {
                 val elapsedTime = it - viewModel.startImgScanTime
-                val timePerImg = elapsedTime / imgAdapter.images.size
-                parentActivity?.supportActionBar?.subtitle = "in $elapsedTime ms - $timePerImg ms per image"
+                if (!imgAdapter.images.isEmpty()) {
+                    val timePerImg = elapsedTime / imgAdapter.images.size
+                    parentActivity?.supportActionBar?.subtitle = "in $elapsedTime ms - $timePerImg ms per image"
+                }
             }
         })
 
@@ -97,6 +99,7 @@ class ImgListFragment : Fragment() {
         if (viewModel.isScanComplete) {
             imgAdapter.notifyDataSetChanged()
         }
+
     }
 
     override fun onDestroy() {
