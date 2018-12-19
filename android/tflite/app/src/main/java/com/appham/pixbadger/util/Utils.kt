@@ -27,16 +27,16 @@ object Utils {
      * @param startTime the time when processing of the image started
      * @param imageClassifier the ML image classifier
      * @param file the reference to the image file
-     * @return a List of Recognitions with labels
+     * @return an Img with recognized labels
      */
-    fun recognizeImg(bitmap: Bitmap, startTime: Long, imageClassifier: ImgClassifier, file: File): List<ImgClassifier.Recognition>{
+    fun recognizeImg(bitmap: Bitmap, startTime: Long, imageClassifier: ImgClassifier, file: File): ImgClassifier.Img{
         val scaledBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false)
         val resizeTime = System.currentTimeMillis() - startTime
-        val recognitions = imageClassifier.recognizeImage(scaledBitmap, file, resizeTime)
-        Log.d(javaClass.name, recognitions.toString())
+        val img = imageClassifier.recognizeImage(scaledBitmap, file, resizeTime)
+        Log.d(javaClass.name, img.toString())
         scaledBitmap.recycle()
         bitmap.recycle()
-        return recognitions
+        return img
     }
 
 }

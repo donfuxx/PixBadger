@@ -1,11 +1,24 @@
 package com.appham.pixbadger.model
 
+import android.content.Context
 import android.graphics.Bitmap
+import com.appham.pixbadger.R
+import com.appham.pixbadger.util.getLabelTexts
 import java.io.File
 
 interface ImgClassifier {
 
-    class Recognition(
+    data class Img(val file: File,
+                   val times: Times,
+                   val recognition: List<ImgClassifier.Recognition>) {
+
+        fun toString(context: Context): String = context.getString(R.string.time_values,
+                times.imgClassifyTime,
+                times.imgResizeTime,
+                recognition.getLabelTexts())
+    }
+
+    data class Recognition(
             /**
              * A unique identifier for what has been recognized. Specific to the class, not the instance of
              * the object.
@@ -25,6 +38,6 @@ interface ImgClassifier {
         }
     }
 
-    fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): List<Recognition>
+    fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): Img
     fun close()
 }

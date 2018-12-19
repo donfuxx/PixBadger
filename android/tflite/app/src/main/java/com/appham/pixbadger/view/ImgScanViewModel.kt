@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.os.Environment
-import com.appham.pixbadger.model.Img
+import com.appham.pixbadger.model.ImgClassifier
 import com.appham.pixbadger.model.ImgClassifierImpl
 import com.appham.pixbadger.util.Utils
 import io.reactivex.Flowable
@@ -20,13 +20,13 @@ class ImgScanViewModel : ViewModel() {
 
     var isScanComplete: Boolean = false
 
-    val imgList: MutableList<Img> = mutableListOf()
+    val imgList: MutableList<ImgClassifier.Img> = mutableListOf()
 
     val startImgScanTime: Long = System.currentTimeMillis()
 
     private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()
 
-    private var lastRecognition: MutableLiveData<Img> = MutableLiveData()
+    private var lastRecognition: MutableLiveData<ImgClassifier.Img> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
 
@@ -34,8 +34,8 @@ class ImgScanViewModel : ViewModel() {
         Regex("(?i).*(jpg|jpeg|png|bmp|gif|tiff)")
     }
 
-    private val imgListObserver: Observer<Img> by lazy {
-        Observer<Img> {
+    private val imgListObserver: Observer<ImgClassifier.Img> by lazy {
+        Observer<ImgClassifier.Img> {
             it?.let {
                 imgList.add(it)
             }
@@ -49,7 +49,6 @@ class ImgScanViewModel : ViewModel() {
             return
         }
 
-        lastRecognition = imageClassifier.lastRecognition
         lastRecognition.observeForever(imgListObserver)
 
         val imgSubject: PublishSubject<File> = PublishSubject.create<File>()
@@ -78,7 +77,7 @@ class ImgScanViewModel : ViewModel() {
         }
     }
 
-    fun getLatestImage(): LiveData<Img> {
+    fun getLatestImage(): LiveData<ImgClassifier.Img> {
         return lastRecognition
     }
 
@@ -89,8 +88,8 @@ class ImgScanViewModel : ViewModel() {
     private fun processImage(file: File, imageClassifier: ImgClassifierImpl) {
         val startTime = System.currentTimeMillis()
         Utils.loadImage(file)?.let {
-            val recognitions = Utils.recognizeImg(it, startTime, imageClassifier, file)
-
+            val img = Utils.recognizeImg(it, startTime, imageClassifier, file)
+            lastRecognition.postValue(img)
         }
     }
 

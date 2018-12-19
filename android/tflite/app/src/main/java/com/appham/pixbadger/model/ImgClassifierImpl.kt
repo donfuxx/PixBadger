@@ -1,6 +1,5 @@
 package com.appham.pixbadger.model
 
-import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
@@ -25,9 +24,7 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
         loadLabelList(context.assets, LABEL_PATH)
     }
 
-    val lastRecognition: MutableLiveData<Img> = MutableLiveData()
-
-    override fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): List<ImgClassifier.Recognition> {
+    override fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): ImgClassifier.Img {
         val byteBuffer = convertBitmapToByteBuffer(bitmap)
         val result = Array(1) { FloatArray(labelList.size) }
 
@@ -39,10 +36,7 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
 
         Log.d(javaClass.name, "recognizeImage: ${times.imgClassifyTime} ms")
 
-        val recognitions = getSortedResult(result)
-        val img = Img(file, times, recognitions)
-        lastRecognition.postValue(img)
-        return recognitions
+        return ImgClassifier.Img(file, times, getSortedRecognitions(result))
     }
 
     override fun close() {
@@ -89,7 +83,7 @@ class ImgClassifierImpl private constructor(private val context: Context) : ImgC
         return byteBuffer
     }
 
-    private fun getSortedResult(labelProbArray: Array<FloatArray>): List<ImgClassifier.Recognition> {
+    private fun getSortedRecognitions(labelProbArray: Array<FloatArray>): List<ImgClassifier.Recognition> {
 
         val pq = PriorityQueue(
                 MAX_RESULTS,
