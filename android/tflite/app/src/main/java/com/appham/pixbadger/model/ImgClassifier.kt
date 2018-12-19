@@ -40,4 +40,8 @@ interface ImgClassifier {
 
     fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): Img
     fun close()
+
+    companion object {
+        const val VERSION: Int = 1
+    }
 }

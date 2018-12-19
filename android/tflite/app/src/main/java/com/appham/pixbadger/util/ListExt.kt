@@ -12,3 +12,11 @@ fun List<ImgClassifier.Recognition>.getLabelTexts():String {
     }
     return labelText.toString()
 }
+
+fun List<ImgClassifier.Recognition>.getLabels():String {
+    val labels = StringBuilder()
+    for (recognition in this) {
+        labels.append(recognition.title).append(",")
+    }
+    return labels.toString().replace(Regex(",$"), "")
+}

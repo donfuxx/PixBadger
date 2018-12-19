@@ -58,7 +58,7 @@ class ImgScanViewModel : ViewModel() {
         db = Room.databaseBuilder(
                 imageClassifier.context.applicationContext,
                 ImgDataBase::class.java, "img_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
 
         lastRecognition.observeForever(imgListObserver)
 
