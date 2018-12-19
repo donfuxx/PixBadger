@@ -58,7 +58,7 @@ class ImgScanViewModel : ViewModel() {
                 .subscribeOn(Schedulers.computation())
                 .subscribe())
 
-        disposables.add(imgSubject.doOnNext { loadImage(it, imageClassifier) }
+        disposables.add(imgSubject.doOnNext { processImage(it, imageClassifier) }
                 .subscribeOn(Schedulers.computation())
                 .doOnComplete { isScanComplete = true }
                 .subscribe())
@@ -86,8 +86,12 @@ class ImgScanViewModel : ViewModel() {
         return endImgScanTime
     }
 
-    private fun loadImage(it: File, imageClassifier: ImgClassifierImpl) {
-        Utils.loadImage(it, imageClassifier)
+    private fun processImage(file: File, imageClassifier: ImgClassifierImpl) {
+        val startTime = System.currentTimeMillis()
+        Utils.loadImage(file)?.let {
+            val recognitions = Utils.recognizeImg(it, startTime, imageClassifier, file)
+
+        }
     }
 
     override fun onCleared() {

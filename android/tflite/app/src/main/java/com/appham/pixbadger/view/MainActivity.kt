@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == STORAGE_PERMISSION_RC && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == STORAGE_PERMISSION_RC && !grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.v(javaClass.name, "Permission: " + permissions[0] + "was " + grantResults[0])
             viewModel.observeImgFiles(imageClassifier)
         }
