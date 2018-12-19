@@ -4,9 +4,12 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
+import android.arch.persistence.room.Room
 import android.os.Environment
 import com.appham.pixbadger.model.ImgClassifier
 import com.appham.pixbadger.model.ImgClassifierImpl
+import com.appham.pixbadger.model.db.ImgDataBase
+import com.appham.pixbadger.model.db.ImgEntity
 import com.appham.pixbadger.util.Utils
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
@@ -42,12 +45,20 @@ class ImgScanViewModel : ViewModel() {
         }
     }
 
+    private lateinit var db: ImgDataBase
+
     fun observeImgFiles(imageClassifier: ImgClassifierImpl) {
 
         // only start image scan once
         if (isImgScanStarted) {
             return
         }
+
+        // setup db
+        db = Room.databaseBuilder(
+                imageClassifier.context.applicationContext,
+                ImgDataBase::class.java, "img_database"
+        ).build()
 
         lastRecognition.observeForever(imgListObserver)
 
@@ -90,6 +101,8 @@ class ImgScanViewModel : ViewModel() {
         Utils.loadImage(file)?.let {
             val img = Utils.recognizeImg(it, startTime, imageClassifier, file)
             lastRecognition.postValue(img)
+
+            db.imgDao().insert(ImgEntity.from(img))
         }
     }
 

@@ -14,7 +14,7 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
 
-class ImgClassifierImpl private constructor(private val context: Context) : ImgClassifier {
+class ImgClassifierImpl private constructor(val context: Context) : ImgClassifier {
 
     private val interpreter: Interpreter by lazy {
         Interpreter(loadModelFile(context.assets, MODEL_PATH))
