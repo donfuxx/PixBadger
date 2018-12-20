@@ -1,6 +1,8 @@
 package com.appham.pixbadger.view
 
 import android.content.Context
+import android.content.Intent
+import android.support.v4.content.FileProvider
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -22,15 +24,26 @@ class ImgAdapter(private val context: Context, val images: MutableList<ImgEntity
 
     override fun onBindViewHolder(holder: ImgHolder, position: Int) {
 
-        images.takeIf { position < it.size }?.get(position)?.let {
-            holder.txtLabel.text = it.toString(context)
-
-            Picasso.get().load(File(it.path))
+        images.takeIf { position < it.size }?.get(position)?.let { imgEntity ->
+            holder.txtLabel.text = imgEntity.toString(context)
+            val file = File(imgEntity.path)
+            Picasso.get().load(file)
                     .resize(100, 100)
                     .onlyScaleDown()
                     .centerInside()
                     .placeholder(R.drawable.ic_launcher)
                     .into(holder.imgItem)
+
+            // add click listener to open image after click
+            (holder.imgItem.parent as ViewGroup).setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = FileProvider.getUriForFile(context,
+                        context.applicationContext.packageName,
+                        file)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                context.startActivity(intent)
+            }
+
         }
 
     }
