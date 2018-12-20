@@ -65,9 +65,10 @@ class ImgListFragment : Fragment() {
         // use a linear layout manager
         imgList.layoutManager = LinearLayoutManager(activity)
 
+        // filter by label if provided as arg or show all images
         arguments?.let {
             viewModel.initImgList(it.getString(ARG_LABEL))
-        }
+        } ?: viewModel.initImgList()
 
 
         imgList.adapter = imgAdapter

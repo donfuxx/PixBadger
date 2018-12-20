@@ -110,7 +110,7 @@ class ImgScanViewModel : ViewModel() {
         }
     }
 
-    private fun initImgList() {
+    fun initImgList() {
         executor.execute {
             imgList.clear()
             imgList.addAll(db.imgDao().getAll())

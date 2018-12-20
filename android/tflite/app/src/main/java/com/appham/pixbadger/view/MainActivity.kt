@@ -12,6 +12,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.ImgClassifierImpl
@@ -49,18 +50,28 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.getLabels().observe(this, Observer {
             it?.let {
-                navigationView.menu.clear()
+                navigationView.menu.removeGroup(R.id.group_filter)
+
                 for (label in it) {
-                    navigationView.menu.add("${label.first} (${label.second})")
+                    navigationView.menu.add(R.id.group_filter,
+                            Menu.NONE,
+                            Menu.NONE,
+                            "${label.first} (${label.second})")
                 }
             }
         })
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
+            menuItem.isCheckable = true
             menuItem.isChecked = true
-            replaceFragment(ImgListFragment.getNewInstance(
-                    menuItem.title.toString().replace(Regex("\\s+.*"), "")),
-                    R.id.frameImgList)
+
+            when (menuItem.itemId) {
+                R.id.action_menu_all -> replaceFragment(ImgListFragment.getNewInstance(), R.id.frameImgList)
+                else -> replaceFragment(ImgListFragment.getNewInstance(
+                        menuItem.title.toString().replace(Regex("\\s+.*"), "")),
+                        R.id.frameImgList)
+            }
+
             drawerLayout.closeDrawers()
 
             true
