@@ -8,9 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
+import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.MenuItem
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.ImgClassifierImpl
 import com.appham.pixbadger.util.Utils
@@ -38,6 +40,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(android.R.drawable.ic_menu_more)
+        }
+
         viewModel.labelList = Utils.loadLabelList(assets, ImgClassifierImpl.LABEL_PATH)
 
         viewModel.getLabels().observe(this, Observer {
@@ -63,6 +70,20 @@ class MainActivity : AppCompatActivity() {
 
         if (isStoragePermissionGranted()) {
             viewModel.observeImgFiles(imageClassifier)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START)
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
