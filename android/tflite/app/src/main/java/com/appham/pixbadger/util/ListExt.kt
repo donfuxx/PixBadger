@@ -7,7 +7,7 @@ fun List<ImgClassifier.Recognition>.getLabelTexts():String {
     for (recognition in this) {
         labelText.append(recognition.title)
                 .append(": ")
-                .append(String.format("(%.1f%%) ", recognition.confidence?.times(100.0f)))
+                .append(String.format("(%.1f%%) ", recognition.confidence.times(100.0f)))
                 .append("\n")
     }
     return labelText.toString().replace(Regex("\n$"), "")
@@ -16,7 +16,9 @@ fun List<ImgClassifier.Recognition>.getLabelTexts():String {
 fun List<ImgClassifier.Recognition>.getLabels():String {
     val labels = StringBuilder()
     for (recognition in this) {
-        labels.append(recognition.title).append(",")
+        if (recognition.confidence > .5f) {
+            labels.append(recognition.title).append(",")
+        }
     }
     return labels.toString().replace(Regex(",$"), "")
 }
