@@ -6,8 +6,11 @@ import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
 import com.appham.pixbadger.util.SingletonHolder
+import com.appham.pixbadger.util.Utils
 import org.tensorflow.lite.Interpreter
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
@@ -21,7 +24,7 @@ class ImgClassifierImpl private constructor(val context: Context) : ImgClassifie
     }
 
     private val labelList: List<String> by lazy {
-        loadLabelList(context.assets, LABEL_PATH)
+        Utils.loadLabelList(context.assets, LABEL_PATH)
     }
 
     override fun recognizeImage(bitmap: Bitmap, file: File, resizeTime: Long): ImgClassifier.Img {
@@ -51,19 +54,6 @@ class ImgClassifierImpl private constructor(val context: Context) : ImgClassifie
         val startOffset = fileDescriptor.startOffset
         val declaredLength = fileDescriptor.declaredLength
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
-    }
-
-    @Throws(IOException::class)
-    private fun loadLabelList(assetManager: AssetManager, labelPath: String): List<String> {
-        val labelList = ArrayList<String>()
-        val reader = BufferedReader(InputStreamReader(assetManager.open(labelPath)))
-        val iterator = reader.lineSequence().iterator()
-        while(iterator.hasNext()) {
-            val line = iterator.next()
-            labelList.add(line)
-        }
-        reader.close()
-        return labelList
     }
 
     private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
@@ -117,7 +107,7 @@ class ImgClassifierImpl private constructor(val context: Context) : ImgClassifie
         private const val IMAGE_MEAN = 128
         private const val IMAGE_STD = 128.0f
         private const val MODEL_PATH = "graph.lite"
-        private const val LABEL_PATH = "labels.txt"
+        const val LABEL_PATH = "labels.txt"
         const val INPUT_SIZE = 224
     }
 

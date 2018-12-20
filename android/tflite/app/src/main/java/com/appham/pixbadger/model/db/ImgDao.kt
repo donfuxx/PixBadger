@@ -13,6 +13,9 @@ interface ImgDao {
     @Query("SELECT * FROM imgs WHERE labels LIKE :label")
     fun getImgs(label: String): List<ImgEntity>?
 
+    @Query("SELECT COUNT() FROM imgs WHERE labels LIKE :label")
+    fun getLabelFacet(label: String): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg img: ImgEntity)
 

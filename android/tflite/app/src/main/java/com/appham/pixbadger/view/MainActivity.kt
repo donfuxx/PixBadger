@@ -1,6 +1,7 @@
 package com.appham.pixbadger.view
 
 import android.Manifest
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
 import android.os.Build
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.ImgClassifierImpl
+import com.appham.pixbadger.util.Utils
 import com.appham.pixbadger.util.replaceFragment
 
 class MainActivity : AppCompatActivity() {
@@ -36,13 +38,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // FIXME: remove test menu items
-        navigationView.menu.add("mountain")
-        navigationView.menu.add("beach")
+        viewModel.labelList = Utils.loadLabelList(assets, ImgClassifierImpl.LABEL_PATH)
+
+        viewModel.getLabels().observe(this, Observer {
+            it?.let {
+                navigationView.menu.clear()
+                for (label in it) {
+                    navigationView.menu.add("${label.first} (${label.second})")
+                }
+            }
+        })
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
             menuItem.isChecked = true
-            replaceFragment(ImgListFragment.getNewInstance(menuItem.title.toString()), R.id.frameImgList)
+            replaceFragment(ImgListFragment.getNewInstance(
+                    menuItem.title.toString().replace(Regex("\\s+.*"), "")),
+                    R.id.frameImgList)
             drawerLayout.closeDrawers()
 
             true

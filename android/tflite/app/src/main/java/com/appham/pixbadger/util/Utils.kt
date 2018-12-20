@@ -1,11 +1,16 @@
 package com.appham.pixbadger.util
 
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import com.appham.pixbadger.model.ImgClassifier
 import com.appham.pixbadger.model.ImgClassifierImpl.Companion.INPUT_SIZE
+import java.io.BufferedReader
 import java.io.File
+import java.io.IOException
+import java.io.InputStreamReader
+import java.util.*
 
 object Utils {
 
@@ -37,6 +42,19 @@ object Utils {
         scaledBitmap.recycle()
         bitmap.recycle()
         return img
+    }
+
+    @Throws(IOException::class)
+    fun loadLabelList(assetManager: AssetManager, labelPath: String): List<String> {
+        val labelList = ArrayList<String>()
+        val reader = BufferedReader(InputStreamReader(assetManager.open(labelPath)))
+        val iterator = reader.lineSequence().iterator()
+        while(iterator.hasNext()) {
+            val line = iterator.next()
+            labelList.add(line)
+        }
+        reader.close()
+        return labelList
     }
 
 }

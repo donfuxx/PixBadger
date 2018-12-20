@@ -28,9 +28,13 @@ class ImgScanViewModel : ViewModel() {
 
     val startImgScanTime: Long = System.currentTimeMillis()
 
+    lateinit var labelList: List<String>
+
     private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()
 
-    private var lastRecognition: MutableLiveData<ImgEntity> = MutableLiveData()
+    private val lastRecognition: MutableLiveData<ImgEntity> = MutableLiveData()
+
+    private val labels: MutableLiveData<List<Pair<String, Int>>> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
 
@@ -78,11 +82,23 @@ class ImgScanViewModel : ViewModel() {
 
         disposables.add(imgSubject.doOnNext { processImage(it, imageClassifier) }
                 .subscribeOn(Schedulers.computation())
-                .doOnComplete { isScanComplete = true }
+                .doOnComplete { onImgScanComplete() }
                 .subscribe())
 
         isImgScanStarted = true
 
+    }
+
+    fun getLatestImage(): LiveData<ImgEntity> {
+        return lastRecognition
+    }
+
+    fun getEndImgScan(): LiveData<Long> {
+        return endImgScanTime
+    }
+
+    fun getLabels(): LiveData<List<Pair<String, Int>>> {
+        return labels
     }
 
     fun initImgList(label: String) {
@@ -98,6 +114,18 @@ class ImgScanViewModel : ViewModel() {
         executor.execute {
             imgList.clear()
             imgList.addAll(db.imgDao().getAll())
+            updateLabels()
+        }
+    }
+
+    private fun updateLabels() {
+        executor.execute {
+            val labelItemList = mutableListOf<Pair<String, Int>>()
+            for (label in labelList) {
+                labelItemList.add(Pair(label, db.imgDao().getLabelFacet(label)))
+            }
+            Log.d(javaClass.name, "labelItemList $labelItemList")
+            labels.postValue(labelItemList)
         }
     }
 
@@ -112,12 +140,9 @@ class ImgScanViewModel : ViewModel() {
         }
     }
 
-    fun getLatestImage(): LiveData<ImgEntity> {
-        return lastRecognition
-    }
-
-    fun getEndImgScan(): LiveData<Long> {
-        return endImgScanTime
+    private fun onImgScanComplete() {
+        isScanComplete = true
+        updateLabels()
     }
 
     private fun processImage(file: File, imageClassifier: ImgClassifierImpl) {

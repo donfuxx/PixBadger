@@ -69,6 +69,7 @@ class ImgListFragment : Fragment() {
             viewModel.initImgList(it.getString(ARG_LABEL))
         }
 
+
         imgList.adapter = imgAdapter
 
         viewModel.getLatestImage().observeForever(imgObserver)
