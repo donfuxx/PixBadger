@@ -1,8 +1,11 @@
 package com.appham.pixbadger.util
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.support.v4.content.FileProvider
 import android.util.Log
 import com.appham.pixbadger.model.ImgClassifier
 import com.appham.pixbadger.model.ImgClassifierImpl.Companion.INPUT_SIZE
@@ -44,6 +47,11 @@ object Utils {
         return img
     }
 
+    /**
+     * @param assetManager
+     * @param labelPath path to labels.txt file in assets folder
+     * @return a list of strings with the labels from the assets folder
+     */
     @Throws(IOException::class)
     fun loadLabelList(assetManager: AssetManager, labelPath: String): List<String> {
         val labelList = ArrayList<String>()
@@ -55,6 +63,20 @@ object Utils {
         }
         reader.close()
         return labelList
+    }
+
+    /**
+     * Start an activity ACTION_VIEW intent for the provided file
+     * @param context
+     * @param file the file to open
+     */
+    fun openFileActivity(context: Context, file: File) {
+        val intent = Intent(if (file.isDirectory) Intent.ACTION_GET_CONTENT else Intent.ACTION_VIEW)
+        intent.data = FileProvider.getUriForFile(context,
+                context.applicationContext.packageName,
+                file)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        context.startActivity(intent)
     }
 
 }

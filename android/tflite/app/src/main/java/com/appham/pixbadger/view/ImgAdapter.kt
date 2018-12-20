@@ -1,13 +1,12 @@
 package com.appham.pixbadger.view
 
 import android.content.Context
-import android.content.Intent
-import android.support.v4.content.FileProvider
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.db.ImgEntity
+import com.appham.pixbadger.util.Utils
 import com.squareup.picasso.Picasso
 import java.io.File
 
@@ -36,12 +35,7 @@ class ImgAdapter(private val context: Context, val images: MutableList<ImgEntity
 
             // add click listener to open image after click
             (holder.imgItem.parent as ViewGroup).setOnClickListener {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = FileProvider.getUriForFile(context,
-                        context.applicationContext.packageName,
-                        file)
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                context.startActivity(intent)
+                Utils.openFileActivity(context, file)
             }
 
         }

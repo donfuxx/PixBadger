@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.*
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.db.ImgEntity
+import com.appham.pixbadger.util.Utils
+import java.io.File
 
 class ImgListFragment : Fragment() {
 
@@ -24,6 +26,10 @@ class ImgListFragment : Fragment() {
 
     private val parentActivity by lazy {
         activity as AppCompatActivity?
+    }
+
+    private val label by lazy {
+        arguments?.getString(ARG_LABEL)
     }
 
     private var isPaused = false
@@ -96,6 +102,7 @@ class ImgListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_menu_pause -> togglePause(item)
+            R.id.action_menu_open_folder -> openFolder()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -119,6 +126,12 @@ class ImgListFragment : Fragment() {
         item.setIcon(if (isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause)
         if (viewModel.isScanComplete) {
             imgAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun openFolder() {
+        if (!imgAdapter.images.isEmpty()) {
+            Utils.openFileActivity(parentActivity!!, File(imgAdapter.images[0].path).parentFile)
         }
     }
 
