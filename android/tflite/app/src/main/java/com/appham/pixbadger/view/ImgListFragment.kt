@@ -65,6 +65,10 @@ class ImgListFragment : Fragment() {
         // use a linear layout manager
         imgList.layoutManager = LinearLayoutManager(activity)
 
+        arguments?.let {
+            viewModel.initImgList(it.getString(ARG_LABEL))
+        }
+
         imgList.adapter = imgAdapter
 
         viewModel.getLatestImage().observeForever(imgObserver)
@@ -113,6 +117,23 @@ class ImgListFragment : Fragment() {
         item.setIcon(if (isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause)
         if (viewModel.isScanComplete) {
             imgAdapter.notifyDataSetChanged()
+        }
+    }
+
+    companion object {
+
+        const val ARG_LABEL = "label"
+
+        fun getNewInstance(): ImgListFragment {
+            return ImgListFragment()
+        }
+
+        fun getNewInstance(label: String): ImgListFragment {
+            val fragment = ImgListFragment()
+            val bundle = Bundle()
+            bundle.putString(ARG_LABEL, label)
+            fragment.arguments = bundle
+            return fragment
         }
     }
 }

@@ -66,9 +66,7 @@ class ImgScanViewModel : ViewModel() {
         ).fallbackToDestructiveMigration().build()
 
         // add images from db to img list
-        executor.execute {
-            imgList.addAll(db.imgDao().getAll())
-        }
+        initImgList()
 
         lastRecognition.observeForever(imgListObserver)
 
@@ -85,6 +83,22 @@ class ImgScanViewModel : ViewModel() {
 
         isImgScanStarted = true
 
+    }
+
+    fun initImgList(label: String) {
+        executor.execute {
+            db.imgDao().getImgs(label)?.let {
+                imgList.clear()
+                imgList.addAll(it)
+            }
+        }
+    }
+
+    private fun initImgList() {
+        executor.execute {
+            imgList.clear()
+            imgList.addAll(db.imgDao().getAll())
+        }
     }
 
     private fun postFiles(imgSubject: PublishSubject<File>, dir: File) {

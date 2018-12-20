@@ -10,6 +10,9 @@ interface ImgDao {
     @Query("SELECT * FROM imgs WHERE path == :filePath LIMIT 1")
     fun getImg(filePath: String): ImgEntity?
 
+    @Query("SELECT * FROM imgs WHERE labels LIKE :label")
+    fun getImgs(label: String): List<ImgEntity>?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg img: ImgEntity)
 

@@ -5,7 +5,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.appham.pixbadger.R
@@ -13,6 +15,14 @@ import com.appham.pixbadger.model.ImgClassifierImpl
 import com.appham.pixbadger.util.replaceFragment
 
 class MainActivity : AppCompatActivity() {
+
+    private val navigationView by lazy {
+        findViewById<NavigationView>(R.id.navView)
+    }
+
+    private val drawerLayout by lazy {
+        findViewById<DrawerLayout>(R.id.drawerLayout)
+    }
 
     private val imageClassifier by lazy {
         ImgClassifierImpl.getInstance(this)
@@ -26,7 +36,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        replaceFragment(ImgListFragment(), R.id.frameImgList)
+        // FIXME: remove test menu items
+        navigationView.menu.add("mountain")
+        navigationView.menu.add("beach")
+
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            menuItem.isChecked = true
+            replaceFragment(ImgListFragment.getNewInstance(menuItem.title.toString()), R.id.frameImgList)
+            drawerLayout.closeDrawers()
+
+            true
+        }
+
+        replaceFragment(ImgListFragment.getNewInstance(), R.id.frameImgList)
 
         if (isStoragePermissionGranted()) {
             viewModel.observeImgFiles(imageClassifier)
