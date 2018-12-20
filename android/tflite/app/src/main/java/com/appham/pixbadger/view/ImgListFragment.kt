@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
 import com.appham.pixbadger.R
-import com.appham.pixbadger.model.ImgClassifier
+import com.appham.pixbadger.model.db.ImgEntity
 
 class ImgListFragment : Fragment() {
 
@@ -28,9 +28,9 @@ class ImgListFragment : Fragment() {
 
     private var isPaused = false
 
-    private val imgObserver: Observer<ImgClassifier.Img> by lazy {
-        Observer<ImgClassifier.Img> { img ->
-            img?.let {
+    private val imgObserver: Observer<ImgEntity> by lazy {
+        Observer<ImgEntity> { imgEntity ->
+            imgEntity?.let {
                 Log.d(this.javaClass.name, "image observed: $it")
                 val position = imgAdapter.images.size - 1
                 imgAdapter.notifyItemChanged(position)

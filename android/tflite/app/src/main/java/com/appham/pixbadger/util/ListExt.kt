@@ -10,7 +10,7 @@ fun List<ImgClassifier.Recognition>.getLabelTexts():String {
                 .append(String.format("(%.1f%%) ", recognition.confidence?.times(100.0f)))
                 .append("\n")
     }
-    return labelText.toString()
+    return labelText.toString().replace(Regex("\n$"), "")
 }
 
 fun List<ImgClassifier.Recognition>.getLabels():String {

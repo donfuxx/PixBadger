@@ -3,7 +3,10 @@ package com.appham.pixbadger.model.db
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import android.content.Context
+import com.appham.pixbadger.R
 import com.appham.pixbadger.model.ImgClassifier
+import com.appham.pixbadger.util.getLabelTexts
 import com.appham.pixbadger.util.getLabels
 
 @Entity(tableName = "imgs")
@@ -17,11 +20,16 @@ data class ImgEntity(
         @ColumnInfo(name = "classify_time") var classifyTime: Long,
         @ColumnInfo(name = "time_stamp") var timeStamp: Long
 ) {
+    fun toString(context: Context): String = context.getString(R.string.time_values,
+            classifyTime,
+            resizeTime,
+            recognitions)
+
     companion object {
         fun from(img: ImgClassifier.Img) = ImgEntity(img.file.absolutePath,
                 img.file.length(),
                 img.recognition.getLabels(),
-                img.recognition.toString(),
+                img.recognition.getLabelTexts(),
                 ImgClassifier.VERSION,
                 img.times.imgResizeTime,
                 img.times.imgClassifyTime,

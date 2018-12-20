@@ -6,7 +6,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.persistence.room.Room
 import android.os.Environment
-import com.appham.pixbadger.model.ImgClassifier
+import android.util.Log
 import com.appham.pixbadger.model.ImgClassifierImpl
 import com.appham.pixbadger.model.db.ImgDataBase
 import com.appham.pixbadger.model.db.ImgEntity
@@ -16,6 +16,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.io.File
+import java.util.concurrent.Executors
 
 class ImgScanViewModel : ViewModel() {
 
@@ -23,13 +24,13 @@ class ImgScanViewModel : ViewModel() {
 
     var isScanComplete: Boolean = false
 
-    val imgList: MutableList<ImgClassifier.Img> = mutableListOf()
+    val imgList: MutableList<ImgEntity> = mutableListOf()
 
     val startImgScanTime: Long = System.currentTimeMillis()
 
     private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()
 
-    private var lastRecognition: MutableLiveData<ImgClassifier.Img> = MutableLiveData()
+    private var lastRecognition: MutableLiveData<ImgEntity> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
 
@@ -37,8 +38,8 @@ class ImgScanViewModel : ViewModel() {
         Regex("(?i).*(jpg|jpeg|png|bmp|gif|tiff)")
     }
 
-    private val imgListObserver: Observer<ImgClassifier.Img> by lazy {
-        Observer<ImgClassifier.Img> {
+    private val imgListObserver: Observer<ImgEntity> by lazy {
+        Observer<ImgEntity> {
             it?.let {
                 imgList.add(it)
             }
@@ -46,6 +47,10 @@ class ImgScanViewModel : ViewModel() {
     }
 
     private lateinit var db: ImgDataBase
+
+    private val executor by lazy {
+        Executors.newSingleThreadExecutor()
+    }
 
     fun observeImgFiles(imageClassifier: ImgClassifierImpl) {
 
@@ -59,6 +64,11 @@ class ImgScanViewModel : ViewModel() {
                 imageClassifier.context.applicationContext,
                 ImgDataBase::class.java, "img_database"
         ).fallbackToDestructiveMigration().build()
+
+        // add images from db to img list
+        executor.execute {
+            imgList.addAll(db.imgDao().getAll())
+        }
 
         lastRecognition.observeForever(imgListObserver)
 
@@ -88,7 +98,7 @@ class ImgScanViewModel : ViewModel() {
         }
     }
 
-    fun getLatestImage(): LiveData<ImgClassifier.Img> {
+    fun getLatestImage(): LiveData<ImgEntity> {
         return lastRecognition
     }
 
@@ -97,10 +107,20 @@ class ImgScanViewModel : ViewModel() {
     }
 
     private fun processImage(file: File, imageClassifier: ImgClassifierImpl) {
+
+        // skip already classified images
+        db.imgDao().getImg(file.absolutePath)?.let {
+            if (it.fileSize == file.length()) {
+                Log.d(javaClass.name, "Skip classify: Img already classified before: $it")
+                return
+            }
+        }
+
+        // classify the new images
         val startTime = System.currentTimeMillis()
         Utils.loadImage(file)?.let {
             val img = Utils.recognizeImg(it, startTime, imageClassifier, file)
-            lastRecognition.postValue(img)
+            lastRecognition.postValue(ImgEntity.from(img))
 
             db.imgDao().insert(ImgEntity.from(img))
         }
