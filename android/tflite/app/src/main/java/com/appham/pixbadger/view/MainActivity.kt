@@ -72,6 +72,11 @@ class MainActivity : AppCompatActivity() {
                         R.id.frameImgList)
             }
 
+            supportActionBar?.apply {
+                title = menuItem.title
+                subtitle = ""
+            }
+
             drawerLayout.closeDrawers()
 
             true
