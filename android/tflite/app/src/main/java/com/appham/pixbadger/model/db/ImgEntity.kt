@@ -20,6 +20,9 @@ data class ImgEntity(
         @ColumnInfo(name = "classify_time") var classifyTime: Long,
         @ColumnInfo(name = "time_stamp") var timeStamp: Long
 ) {
+
+    fun getTopLabel(): String = labels.replace(Regex(",.*"), "")
+
     fun toString(context: Context): String = context.getString(R.string.time_values,
             classifyTime,
             resizeTime,

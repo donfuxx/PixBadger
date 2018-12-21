@@ -1,9 +1,10 @@
 package com.appham.pixbadger.view
 
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
 import android.arch.persistence.room.Room
 import android.os.Environment
 import android.util.Log
@@ -18,7 +19,7 @@ import io.reactivex.subjects.PublishSubject
 import java.io.File
 import java.util.concurrent.Executors
 
-class ImgScanViewModel : ViewModel() {
+class ImgScanViewModel(application: Application) : AndroidViewModel(application) {
 
     var isImgScanStarted: Boolean = false
 
@@ -50,7 +51,12 @@ class ImgScanViewModel : ViewModel() {
         }
     }
 
-    private lateinit var db: ImgDataBase
+    private val db: ImgDataBase by lazy {
+        Room.databaseBuilder(
+                application,
+                ImgDataBase::class.java, "img_database"
+        ).fallbackToDestructiveMigration().build()
+    }
 
     private val executor by lazy {
         Executors.newSingleThreadExecutor()
@@ -62,12 +68,6 @@ class ImgScanViewModel : ViewModel() {
         if (isImgScanStarted) {
             return
         }
-
-        // setup db
-        db = Room.databaseBuilder(
-                imageClassifier.context.applicationContext,
-                ImgDataBase::class.java, "img_database"
-        ).fallbackToDestructiveMigration().build()
 
         // add images from db to img list
         initImgList()
