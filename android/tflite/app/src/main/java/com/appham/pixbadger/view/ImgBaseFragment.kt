@@ -57,6 +57,7 @@ abstract class ImgBaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        imgAdapter.itemLayout = if (this is ImgGridFragment) R.layout.item_grid_img else R.layout.item_list_img
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {

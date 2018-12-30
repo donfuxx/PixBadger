@@ -10,11 +10,14 @@ import com.appham.pixbadger.util.Utils
 import com.squareup.picasso.Picasso
 import java.io.File
 
-class ImgAdapter(private val context: Context, val images: MutableList<ImgEntity>) : RecyclerView.Adapter<ImgHolder>() {
+class ImgAdapter(private val context: Context,
+                 val images: MutableList<ImgEntity>) : RecyclerView.Adapter<ImgHolder>() {
+
+    var itemLayout: Int = R.layout.item_list_img
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImgHolder {
         return ImgHolder(LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_img, parent, false))
+                .inflate(itemLayout, parent, false))
     }
 
     override fun getItemCount(): Int {
