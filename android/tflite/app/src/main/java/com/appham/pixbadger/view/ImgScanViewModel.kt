@@ -25,7 +25,7 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
     var isScanComplete: Boolean = false
 
-    val imgList: MutableList<ImgEntity> = mutableListOf()
+    var imgList: MutableList<ImgEntity> = mutableListOf()
 
     val startImgScanTime: Long = System.currentTimeMillis()
 
@@ -112,7 +112,7 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
     fun initImgList() {
         executor.execute {
-            imgList.clear()
+            imgList = mutableListOf()
             imgList.addAll(db.imgDao().getAll())
             updateLabels()
         }

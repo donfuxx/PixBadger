@@ -2,13 +2,13 @@ package com.appham.pixbadger.view
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.appham.pixbadger.R
 
-class ImgListFragment : ImgBaseFragment() {
+class ImgGridFragment : ImgBaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -22,7 +22,7 @@ class ImgListFragment : ImgBaseFragment() {
         imgList.setHasFixedSize(true)
 
         // use a linear layout manager
-        imgList.layoutManager = LinearLayoutManager(activity)
+        imgList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
         // filter by label if provided as arg or show all images
         initImgs()
@@ -46,17 +46,16 @@ class ImgListFragment : ImgBaseFragment() {
 
     companion object {
 
-        fun getNewInstance(): ImgListFragment {
-            return ImgListFragment()
+        fun getNewInstance(): ImgGridFragment {
+            return ImgGridFragment()
         }
 
-        fun getNewInstance(label: String): ImgListFragment {
-            val fragment = ImgListFragment()
+        fun getNewInstance(label: String): ImgGridFragment {
+            val fragment = ImgGridFragment()
             val bundle = Bundle()
             bundle.putString(ARG_LABEL, label)
             fragment.arguments = bundle
             return fragment
         }
     }
-
 }

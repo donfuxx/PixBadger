@@ -13,6 +13,7 @@ import android.view.MenuItem
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.db.ImgEntity
 import com.appham.pixbadger.util.Utils
+import com.appham.pixbadger.util.replaceFragment
 import java.io.File
 
 abstract class ImgBaseFragment : Fragment() {
@@ -46,7 +47,7 @@ abstract class ImgBaseFragment : Fragment() {
 
     protected lateinit var imgList: RecyclerView
 
-    protected val label by lazy {
+    private val label by lazy {
         arguments?.getString(ARG_LABEL)
     }
 
@@ -63,8 +64,19 @@ abstract class ImgBaseFragment : Fragment() {
         inflater?.inflate(R.menu.menu_img_list, menu)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        super.onPrepareOptionsMenu(menu)
+        val item = menu?.findItem(R.id.action_menu_grid_view)
+        if (this is ImgGridFragment) {
+            item?.setIcon(android.R.drawable.ic_menu_add)
+        } else {
+            item?.setIcon(android.R.drawable.ic_menu_gallery)
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
+            R.id.action_menu_grid_view -> toggleGridView(item)
             R.id.action_menu_pause -> togglePause(item)
             R.id.action_menu_open_folder -> openFolder()
         }
@@ -85,6 +97,20 @@ abstract class ImgBaseFragment : Fragment() {
     }
     //endregion lifecycle methods
 
+    protected fun initImgs() {
+        label?.let {
+            viewModel.initImgList(it)
+        } ?: viewModel.initImgList()
+    }
+
+    private fun toggleGridView(item: MenuItem) {
+        if (this is ImgGridFragment) {
+            parentActivity?.replaceFragment(ImgListFragment.getNewInstance(), R.id.frameImgList)
+        } else {
+            parentActivity?.replaceFragment(ImgGridFragment.getNewInstance(), R.id.frameImgList)
+        }
+    }
+
     private fun togglePause(item: MenuItem) {
         isPaused = !isPaused
         item.setIcon(if (isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause)
@@ -100,20 +126,7 @@ abstract class ImgBaseFragment : Fragment() {
     }
 
     companion object {
-
         const val ARG_LABEL = "label"
-
-        fun getNewInstance(): ImgListFragment {
-            return ImgListFragment()
-        }
-
-        fun getNewInstance(label: String): ImgListFragment {
-            val fragment = ImgListFragment()
-            val bundle = Bundle()
-            bundle.putString(ARG_LABEL, label)
-            fragment.arguments = bundle
-            return fragment
-        }
     }
 
 }
