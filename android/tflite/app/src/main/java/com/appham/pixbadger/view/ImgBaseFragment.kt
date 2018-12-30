@@ -46,11 +46,11 @@ abstract class ImgBaseFragment : Fragment() {
 
     protected lateinit var imgList: RecyclerView
 
-    private var isPaused = false
-
-    private val label by lazy {
+    protected val label by lazy {
         arguments?.getString(ARG_LABEL)
     }
+
+    private var isPaused = false
 
     //region lifecycle methods
     override fun onCreate(savedInstanceState: Bundle?) {

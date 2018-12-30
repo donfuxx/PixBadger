@@ -25,8 +25,8 @@ class ImgListFragment : ImgBaseFragment() {
         imgList.layoutManager = LinearLayoutManager(activity)
 
         // filter by label if provided as arg or show all images
-        arguments?.let {
-            viewModel.initImgList(it.getString(ARG_LABEL))
+        label?.let {
+            viewModel.initImgList(it)
         } ?: viewModel.initImgList()
 
 
