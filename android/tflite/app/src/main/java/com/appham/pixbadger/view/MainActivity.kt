@@ -66,8 +66,8 @@ class MainActivity : AppCompatActivity() {
             menuItem.isChecked = true
 
             when (menuItem.itemId) {
-                R.id.action_menu_all -> replaceFragment(ImgListFragment.getNewInstance(), R.id.frameImgList)
-                else -> replaceFragment(ImgListFragment.getNewInstance(
+                R.id.action_menu_all -> replaceFragment(ImgBaseFragment.getNewInstance(), R.id.frameImgList)
+                else -> replaceFragment(ImgBaseFragment.getNewInstance(
                         menuItem.title.toString().replace(Regex("\\s+.*"), "")),
                         R.id.frameImgList)
             }
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        replaceFragment(ImgListFragment.getNewInstance(), R.id.frameImgList)
+        replaceFragment(ImgBaseFragment.getNewInstance(), R.id.frameImgList)
 
         if (isStoragePermissionGranted()) {
             viewModel.observeImgFiles(imageClassifier)
