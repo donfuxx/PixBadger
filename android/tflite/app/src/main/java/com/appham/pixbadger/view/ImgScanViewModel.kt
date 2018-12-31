@@ -8,6 +8,7 @@ import android.arch.lifecycle.Observer
 import android.arch.persistence.room.Room
 import android.os.Environment
 import android.util.Log
+import com.appham.pixbadger.model.ImgClassifier
 import com.appham.pixbadger.model.ImgClassifierImpl
 import com.appham.pixbadger.model.db.ImgDataBase
 import com.appham.pixbadger.model.db.ImgEntity
@@ -149,7 +150,7 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
         // skip already classified images
         db.imgDao().getImg(file.absolutePath)?.let {
-            if (it.fileSize == file.length()) {
+            if (it.fileSize == file.length() && it.classifierVersion == ImgClassifier.VERSION) {
                 Log.d(javaClass.name, "Skip classify: Img already classified before: $it")
                 return
             }

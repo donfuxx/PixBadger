@@ -12,7 +12,7 @@ cd ${TF_PATH}
 ls
 
 toco \
-  --graph_def_file=tf_files/retrained_graph.pb \
+  --graph_def_file=tf_files/retrained_graph_LR_0.0001.pb \
   --output_file=tf_files/optimized_graph.lite \
   --input_format=TENSORFLOW_GRAPHDEF \
   --output_format=TFLITE \

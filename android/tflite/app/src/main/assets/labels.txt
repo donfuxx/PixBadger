@@ -1,9 +1,12 @@
 animal
 beach
 city
+document
+food
 forest
 lake
 man
 mountain
+other
 river
 woman

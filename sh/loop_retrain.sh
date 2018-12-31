@@ -15,17 +15,17 @@ do
   if [[ $I = 1 ]]
     then LR=0.001
     elif [[ $I = 2 ]]
-    then LR=0.0005
-    elif [[ $I = 3 ]]
+#    then LR=0.0005
+#    elif [[ $I = 3 ]]
     then LR=0.0001
-    elif [[ $I = 4 ]]
-    then LR=0.00005
-    elif [[ $I = 5 ]]
-    then LR=0.00001
-    elif [[ $I = 6 ]]
-    then LR=0.000005
-    elif [[ $I = 7 ]]
-    then LR=0.000001
+#    elif [[ $I = 4 ]]
+#    then LR=0.00005
+#    elif [[ $I = 5 ]]
+#    then LR=0.00001
+#    elif [[ $I = 6 ]]
+#    then LR=0.000005
+#    elif [[ $I = 7 ]]
+#    then LR=0.000001
     else $SHELL
   fi
 
