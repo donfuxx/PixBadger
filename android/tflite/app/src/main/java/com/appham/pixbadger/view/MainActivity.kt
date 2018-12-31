@@ -48,11 +48,13 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.labelList = Utils.loadLabelList(assets, ImgClassifierImpl.LABEL_PATH)
 
-        viewModel.getLabels().observe(this, Observer {
-            it?.let {
+        viewModel.getLabels().observe(this, Observer { list ->
+            list?.let { labelList ->
                 navigationView.menu.removeGroup(R.id.group_filter)
 
-                for (label in it) {
+                val sortedList = labelList.sortedWith(compareBy { it.second }).asReversed()
+
+                for (label in sortedList) {
                     navigationView.menu.add(R.id.group_filter,
                             Menu.NONE,
                             Menu.NONE,
