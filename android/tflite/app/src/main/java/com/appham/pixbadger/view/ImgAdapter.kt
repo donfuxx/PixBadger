@@ -1,6 +1,7 @@
 package com.appham.pixbadger.view
 
 import android.content.Context
+import android.content.res.Resources
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,6 +15,10 @@ class ImgAdapter(private val context: Context,
                  val images: MutableList<ImgEntity>) : RecyclerView.Adapter<ImgHolder>() {
 
     var itemLayout: Int = R.layout.item_list_img
+
+    private val screenWidthPx by lazy { Resources.getSystem().displayMetrics.widthPixels }
+
+    private val screenHeightPx by lazy { Resources.getSystem().displayMetrics.heightPixels }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImgHolder {
         return ImgHolder(LayoutInflater.from(parent.context)
@@ -30,7 +35,8 @@ class ImgAdapter(private val context: Context,
             holder.txtLabel.text = imgEntity.toString(context)
             val file = File(imgEntity.path)
             Picasso.get().load(file)
-                    .resize(100, 100)
+                    .resize(Math.min(screenWidthPx / 3, screenHeightPx / 2),
+                            Math.min(screenWidthPx / 4, screenHeightPx / 3))
                     .onlyScaleDown()
                     .centerInside()
                     .placeholder(R.drawable.ic_launcher)
