@@ -80,7 +80,7 @@ abstract class ImgBaseFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_menu_grid_view -> toggleGridView(item)
+            R.id.action_menu_grid_view -> toggleGridView()
             R.id.action_menu_pause -> togglePause(item)
             R.id.action_menu_open_folder -> openFolder()
         }
@@ -107,12 +107,9 @@ abstract class ImgBaseFragment : Fragment() {
         } ?: viewModel.initImgList()
     }
 
-    private fun toggleGridView(item: MenuItem) {
-        if (this is ImgGridFragment) {
-            parentActivity?.replaceFragment(ImgListFragment.getNewInstance(), R.id.frameImgList)
-        } else {
-            parentActivity?.replaceFragment(ImgGridFragment.getNewInstance(), R.id.frameImgList)
-        }
+    private fun toggleGridView() {
+        viewModel.isListView = !viewModel.isListView
+        parentActivity?.replaceFragment(getNewInstance(viewModel.label, viewModel), R.id.frameImgList)
     }
 
     private fun togglePause(item: MenuItem) {
@@ -131,6 +128,22 @@ abstract class ImgBaseFragment : Fragment() {
 
     companion object {
         const val ARG_LABEL = "label"
+
+        fun getNewInstance(viewModel: ImgScanViewModel): ImgBaseFragment {
+            return if (viewModel.isListView) {
+                ImgListFragment()
+            } else {
+                ImgGridFragment()
+            }
+        }
+
+        fun getNewInstance(label: String?, viewModel: ImgScanViewModel): ImgBaseFragment {
+            val fragment = getNewInstance(viewModel)
+            val bundle = Bundle()
+            bundle.putString(ARG_LABEL, label)
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
 }

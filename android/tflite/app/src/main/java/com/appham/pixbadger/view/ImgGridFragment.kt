@@ -43,19 +43,4 @@ class ImgGridFragment : ImgBaseFragment() {
 
         super.onViewCreated(view, savedInstanceState)
     }
-
-    companion object {
-
-        fun getNewInstance(): ImgGridFragment {
-            return ImgGridFragment()
-        }
-
-        fun getNewInstance(label: String): ImgGridFragment {
-            val fragment = ImgGridFragment()
-            val bundle = Bundle()
-            bundle.putString(ARG_LABEL, label)
-            fragment.arguments = bundle
-            return fragment
-        }
-    }
 }

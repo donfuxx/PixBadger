@@ -43,20 +43,4 @@ class ImgListFragment : ImgBaseFragment() {
 
         super.onViewCreated(view, savedInstanceState)
     }
-
-    companion object {
-
-        fun getNewInstance(): ImgListFragment {
-            return ImgListFragment()
-        }
-
-        fun getNewInstance(label: String): ImgListFragment {
-            val fragment = ImgListFragment()
-            val bundle = Bundle()
-            bundle.putString(ARG_LABEL, label)
-            fragment.arguments = bundle
-            return fragment
-        }
-    }
-
 }

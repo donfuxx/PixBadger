@@ -32,6 +32,8 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
     var isPaused = false
 
+    var isListView = true
+
     var label: String? = null
 
     lateinit var labelList: List<String>
