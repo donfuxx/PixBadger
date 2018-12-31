@@ -53,6 +53,9 @@ abstract class ImgBaseFragment : Fragment() {
         setHasOptionsMenu(true)
         imgAdapter.itemLayout = if (this is ImgGridFragment) R.layout.item_grid_img else R.layout.item_list_img
         viewModel.label = arguments?.getString(ARG_LABEL)
+        viewModel.isScanComplete().observe(this, Observer {
+            imgAdapter.notifyDataSetChanged()
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -87,14 +90,6 @@ abstract class ImgBaseFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (viewModel.isScanComplete) {
-            imgAdapter.notifyDataSetChanged()
-        }
-
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         viewModel.getLatestImage().removeObserver(imgObserver)
@@ -115,9 +110,6 @@ abstract class ImgBaseFragment : Fragment() {
     private fun togglePause(item: MenuItem) {
         viewModel.isPaused = !viewModel.isPaused
         item.setIcon(if (viewModel.isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause)
-        if (viewModel.isScanComplete) {
-            imgAdapter.notifyDataSetChanged()
-        }
     }
 
     private fun openFolder() {

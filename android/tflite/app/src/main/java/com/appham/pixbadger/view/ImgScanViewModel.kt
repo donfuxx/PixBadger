@@ -24,8 +24,6 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
     var isImgScanStarted: Boolean = false
 
-    var isScanComplete: Boolean = false
-
     var imgList: MutableList<ImgEntity> = mutableListOf()
 
     val startImgScanTime: Long = System.currentTimeMillis()
@@ -37,6 +35,8 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
     var label: String? = null
 
     lateinit var labelList: List<String>
+
+    private var isScanComplete: MutableLiveData<Boolean> = MutableLiveData()
 
     private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()
 
@@ -93,20 +93,15 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
                 .subscribe())
 
         isImgScanStarted = true
-
     }
 
-    fun getLatestImage(): LiveData<ImgEntity> {
-        return lastRecognition
-    }
+    fun getLatestImage(): LiveData<ImgEntity> = lastRecognition
 
-    fun getEndImgScan(): LiveData<Long> {
-        return endImgScanTime
-    }
+    fun isScanComplete(): LiveData<Boolean> = isScanComplete
 
-    fun getLabels(): LiveData<List<Pair<String, Int>>> {
-        return labels
-    }
+    fun getEndImgScan(): LiveData<Long> = endImgScanTime
+
+    fun getLabels(): LiveData<List<Pair<String, Int>>> = labels
 
     fun initImgList(label: String) {
         executor.execute {
@@ -114,6 +109,7 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
                 imgList.clear()
                 imgList.addAll(it)
             }
+            isScanComplete.postValue(false)
         }
     }
 
@@ -122,6 +118,7 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
             imgList = mutableListOf()
             imgList.addAll(db.imgDao().getAll())
             updateLabels()
+            isScanComplete.postValue(false)
         }
     }
 
@@ -145,11 +142,12 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
                 endImgScanTime.postValue(System.currentTimeMillis())
             }
         }
+        imgSubject.onComplete()
     }
 
     private fun onImgScanComplete() {
-        isScanComplete = true
         updateLabels()
+        isScanComplete.postValue(true)
     }
 
     private fun processImage(file: File, imageClassifier: ImgClassifierImpl) {
