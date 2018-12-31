@@ -106,7 +106,7 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
     fun initImgList(label: String) {
         executor.execute {
             db.imgDao().getImgs(label)?.let {
-                imgList.clear()
+                imgList = mutableListOf()
                 imgList.addAll(it)
             }
             isScanComplete.postValue(false)

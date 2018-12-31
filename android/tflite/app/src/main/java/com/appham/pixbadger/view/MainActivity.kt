@@ -68,10 +68,14 @@ class MainActivity : AppCompatActivity() {
             menuItem.isChecked = true
 
             when (menuItem.itemId) {
-                R.id.action_menu_all -> replaceFragment(ImgBaseFragment.getNewInstance(viewModel), R.id.frameImgList)
-                else -> replaceFragment(ImgBaseFragment.getNewInstance(
-                        menuItem.title.toString().replace(Regex("\\s+.*"), ""), viewModel),
-                        R.id.frameImgList)
+                R.id.action_menu_all -> {
+                    viewModel.label = null //TODO: review switching labels
+                    viewModel.initImgList()
+                }
+                else -> {
+                    viewModel.label = menuItem.title.toString().replace(Regex("\\s+.*"), "")
+                    viewModel.initImgList(viewModel.label!!)
+                }
             }
 
             supportActionBar?.apply {

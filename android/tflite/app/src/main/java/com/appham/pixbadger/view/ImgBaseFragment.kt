@@ -52,8 +52,9 @@ abstract class ImgBaseFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         imgAdapter.itemLayout = if (this is ImgGridFragment) R.layout.item_grid_img else R.layout.item_list_img
-        viewModel.label = arguments?.getString(ARG_LABEL)
         viewModel.isScanComplete().observe(this, Observer {
+            imgAdapter.images.clear()
+            imgAdapter.images.addAll(viewModel.imgList)
             imgAdapter.notifyDataSetChanged()
         })
     }
@@ -104,7 +105,7 @@ abstract class ImgBaseFragment : Fragment() {
 
     private fun toggleGridView() {
         viewModel.isListView = !viewModel.isListView
-        parentActivity?.replaceFragment(getNewInstance(viewModel.label, viewModel), R.id.frameImgList)
+        parentActivity?.replaceFragment(getNewInstance(viewModel), R.id.frameImgList)
     }
 
     private fun togglePause(item: MenuItem) {
@@ -119,7 +120,6 @@ abstract class ImgBaseFragment : Fragment() {
     }
 
     companion object {
-        const val ARG_LABEL = "label"
 
         fun getNewInstance(viewModel: ImgScanViewModel): ImgBaseFragment {
             return if (viewModel.isListView) {
@@ -127,14 +127,6 @@ abstract class ImgBaseFragment : Fragment() {
             } else {
                 ImgGridFragment()
             }
-        }
-
-        fun getNewInstance(label: String?, viewModel: ImgScanViewModel): ImgBaseFragment {
-            val fragment = getNewInstance(viewModel)
-            val bundle = Bundle()
-            bundle.putString(ARG_LABEL, label)
-            fragment.arguments = bundle
-            return fragment
         }
     }
 
