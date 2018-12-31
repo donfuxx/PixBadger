@@ -30,6 +30,10 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
     val startImgScanTime: Long = System.currentTimeMillis()
 
+    var isPaused = false
+
+    var label: String? = null
+
     lateinit var labelList: List<String>
 
     private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()

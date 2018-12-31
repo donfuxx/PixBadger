@@ -36,7 +36,7 @@ abstract class ImgBaseFragment : Fragment() {
                 Log.d(this.javaClass.name, "image observed: $it")
                 val position = imgAdapter.images.size - 1
                 imgAdapter.notifyItemChanged(position)
-                if (!isPaused) {
+                if (!viewModel.isPaused) {
                     imgList.scrollToPosition(position)
                 }
 
@@ -47,17 +47,12 @@ abstract class ImgBaseFragment : Fragment() {
 
     protected lateinit var imgList: RecyclerView
 
-    private val label by lazy {
-        arguments?.getString(ARG_LABEL)
-    }
-
-    private var isPaused = false
-
     //region lifecycle methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         imgAdapter.itemLayout = if (this is ImgGridFragment) R.layout.item_grid_img else R.layout.item_list_img
+        viewModel.label = arguments?.getString(ARG_LABEL)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -67,11 +62,19 @@ abstract class ImgBaseFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
-        val item = menu?.findItem(R.id.action_menu_grid_view)
+
+        val viewTypeItem = menu?.findItem(R.id.action_menu_grid_view)
         if (this is ImgGridFragment) {
-            item?.setIcon(android.R.drawable.ic_menu_add)
+            viewTypeItem?.setIcon(android.R.drawable.ic_menu_add)
         } else {
-            item?.setIcon(android.R.drawable.ic_menu_gallery)
+            viewTypeItem?.setIcon(android.R.drawable.ic_menu_gallery)
+        }
+
+        val pausedItem = menu?.findItem(R.id.action_menu_pause)
+        if (viewModel.isPaused) {
+            pausedItem?.setIcon(android.R.drawable.ic_media_play)
+        } else {
+            pausedItem?.setIcon(android.R.drawable.ic_media_pause)
         }
     }
 
@@ -99,7 +102,7 @@ abstract class ImgBaseFragment : Fragment() {
     //endregion lifecycle methods
 
     protected fun initImgs() {
-        label?.let {
+        viewModel.label?.let {
             viewModel.initImgList(it)
         } ?: viewModel.initImgList()
     }
@@ -113,8 +116,8 @@ abstract class ImgBaseFragment : Fragment() {
     }
 
     private fun togglePause(item: MenuItem) {
-        isPaused = !isPaused
-        item.setIcon(if (isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause)
+        viewModel.isPaused = !viewModel.isPaused
+        item.setIcon(if (viewModel.isPaused) android.R.drawable.ic_media_play else android.R.drawable.ic_media_pause)
         if (viewModel.isScanComplete) {
             imgAdapter.notifyDataSetChanged()
         }
