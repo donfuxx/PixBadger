@@ -20,5 +20,8 @@ fun List<ImgClassifier.Recognition>.getLabels():String {
             labels.append(recognition.title).append(",")
         }
     }
+    if (labels.isBlank()) {
+        labels.append("other")
+    }
     return labels.toString().replace(Regex(",$"), "")
 }
