@@ -10,7 +10,7 @@ interface ImgDao {
     @Query("SELECT * FROM imgs WHERE path == :filePath LIMIT 1")
     fun getImg(filePath: String): ImgEntity?
 
-    @Query("SELECT * FROM imgs WHERE labels LIKE :label")
+    @Query("SELECT * FROM imgs WHERE labels LIKE :label ORDER BY recognitions DESC")
     fun getImgs(label: String): List<ImgEntity>?
 
     @Query("SELECT COUNT() FROM imgs WHERE labels LIKE :label")
