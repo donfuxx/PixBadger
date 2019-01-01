@@ -32,10 +32,15 @@ class ImgAdapter(private val context: Context,
     override fun onBindViewHolder(holder: ImgHolder, position: Int) {
 
         images.takeIf { position < it.size }?.get(position)?.let { imgEntity ->
-            holder.txtLabel.text = imgEntity.toString(context)
+            holder.txtLabel.text = if (itemLayout == R.layout.item_list_img) {
+                imgEntity.toString(context)
+            } else {
+                imgEntity.labels
+            }
+
             val file = File(imgEntity.path)
             Picasso.get().load(file)
-                    .resize(Math.min(screenWidthPx / 3, screenHeightPx / 2),
+                    .resize(Math.min(screenWidthPx / 2, screenHeightPx / 2),
                             Math.min(screenWidthPx / 4, screenHeightPx / 3))
                     .onlyScaleDown()
                     .centerInside()

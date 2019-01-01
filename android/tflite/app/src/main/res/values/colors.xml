@@ -16,4 +16,6 @@
 -->
 <resources>
     <color name="control_background">#cc4285f4</color>
+    <color name="white">#ffffffff</color>
+    <color name="gray_transp">#99999999</color>
 </resources>
