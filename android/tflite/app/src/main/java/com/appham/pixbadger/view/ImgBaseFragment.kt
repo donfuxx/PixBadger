@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import com.appham.pixbadger.R
 import com.appham.pixbadger.model.db.ImgEntity
 import com.appham.pixbadger.util.Utils
@@ -51,6 +52,32 @@ abstract class ImgBaseFragment : Fragment() {
         viewModel.isScanComplete().observe(this, Observer {
             viewModel.imgAdapter.notifyDataSetChanged()
         })
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        // get recycler-list of img results
+        imgList = view.findViewById(R.id.listImgs)
+        imgList.setHasFixedSize(true)
+
+        // filter by label if provided as arg or show all images
+        initImgs()
+
+        imgList.adapter = viewModel.imgAdapter
+
+        viewModel.getLatestImage().observeForever(imgObserver)
+
+        viewModel.getEndImgScan().observe(this, Observer { endImgScanTime ->
+            endImgScanTime?.let {
+                val elapsedTime = it - viewModel.startImgScanTime
+                if (!viewModel.imgAdapter.images.isEmpty()) {
+                    val timePerImg = elapsedTime / viewModel.imgAdapter.images.size
+                    parentActivity?.supportActionBar?.subtitle = "in $elapsedTime ms - $timePerImg ms per image"
+                }
+            }
+        })
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
