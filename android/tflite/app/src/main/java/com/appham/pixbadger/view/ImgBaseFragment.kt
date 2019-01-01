@@ -22,10 +22,6 @@ abstract class ImgBaseFragment : Fragment() {
         ViewModelProviders.of(activity!!).get(ImgScanViewModel::class.java)
     }
 
-    protected val imgAdapter by lazy {
-        ImgAdapter(parentActivity!!, viewModel.imgList)
-    }
-
     protected val parentActivity by lazy {
         activity as AppCompatActivity?
     }
@@ -34,13 +30,13 @@ abstract class ImgBaseFragment : Fragment() {
         Observer<ImgEntity> { imgEntity ->
             imgEntity?.let {
                 Log.d(this.javaClass.name, "image observed: $it")
-                val position = imgAdapter.images.size - 1
-                imgAdapter.notifyItemChanged(position)
+                val position = viewModel.imgAdapter.images.size - 1
+                viewModel.imgAdapter.notifyItemChanged(position)
                 if (!viewModel.isPaused) {
                     imgList.scrollToPosition(position)
                 }
 
-                parentActivity?.supportActionBar?.title = "${imgAdapter.images.size} images classified"
+                parentActivity?.supportActionBar?.title = "${viewModel.imgAdapter.images.size} images classified"
             }
         }
     }
@@ -51,11 +47,9 @@ abstract class ImgBaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        imgAdapter.itemLayout = if (this is ImgGridFragment) R.layout.item_grid_img else R.layout.item_list_img
+        viewModel.imgAdapter.itemLayout = if (this is ImgGridFragment) R.layout.item_grid_img else R.layout.item_list_img
         viewModel.isScanComplete().observe(this, Observer {
-            imgAdapter.images.clear()
-            imgAdapter.images.addAll(viewModel.imgList)
-            imgAdapter.notifyDataSetChanged()
+            viewModel.imgAdapter.notifyDataSetChanged()
         })
     }
 
@@ -114,8 +108,8 @@ abstract class ImgBaseFragment : Fragment() {
     }
 
     private fun openFolder() {
-        if (!imgAdapter.images.isEmpty()) {
-            Utils.openFileActivity(parentActivity!!, File(imgAdapter.images[0].path).parentFile)
+        if (!viewModel.imgAdapter.images.isEmpty()) {
+            Utils.openFileActivity(parentActivity!!, File(viewModel.imgAdapter.images[0].path).parentFile)
         }
     }
 

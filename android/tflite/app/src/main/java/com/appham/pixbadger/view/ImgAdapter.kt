@@ -1,6 +1,5 @@
 package com.appham.pixbadger.view
 
-import android.content.Context
 import android.content.res.Resources
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -11,8 +10,9 @@ import com.appham.pixbadger.util.Utils
 import com.squareup.picasso.Picasso
 import java.io.File
 
-class ImgAdapter(private val context: Context,
-                 val images: MutableList<ImgEntity>) : RecyclerView.Adapter<ImgHolder>() {
+class ImgAdapter : RecyclerView.Adapter<ImgHolder>() {
+
+    var images: MutableList<ImgEntity> = mutableListOf()
 
     var itemLayout: Int = R.layout.item_list_img
 
@@ -33,7 +33,7 @@ class ImgAdapter(private val context: Context,
 
         images.takeIf { position < it.size }?.get(position)?.let { imgEntity ->
             holder.txtLabel.text = if (itemLayout == R.layout.item_list_img) {
-                imgEntity.toString(context)
+                imgEntity.toString(holder.txtLabel.context)
             } else {
                 imgEntity.labels
             }
@@ -49,7 +49,7 @@ class ImgAdapter(private val context: Context,
 
             // add click listener to open image after click
             (holder.imgItem.parent as ViewGroup).setOnClickListener {
-                Utils.openFileActivity(context, file)
+                Utils.openFileActivity(holder.txtLabel.context, file)
             }
 
         }

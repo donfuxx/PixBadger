@@ -27,15 +27,15 @@ class ImgGridFragment : ImgBaseFragment() {
         // filter by label if provided as arg or show all images
         initImgs()
 
-        imgList.adapter = imgAdapter
+        imgList.adapter = viewModel.imgAdapter
 
         viewModel.getLatestImage().observeForever(imgObserver)
 
         viewModel.getEndImgScan().observe(this, Observer { endImgScanTime ->
             endImgScanTime?.let {
                 val elapsedTime = it - viewModel.startImgScanTime
-                if (!imgAdapter.images.isEmpty()) {
-                    val timePerImg = elapsedTime / imgAdapter.images.size
+                if (!viewModel.imgAdapter.images.isEmpty()) {
+                    val timePerImg = elapsedTime / viewModel.imgAdapter.images.size
                     parentActivity?.supportActionBar?.subtitle = "in $elapsedTime ms - $timePerImg ms per image"
                 }
             }

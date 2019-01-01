@@ -24,9 +24,9 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
     var isImgScanStarted: Boolean = false
 
-    var imgList: MutableList<ImgEntity> = mutableListOf()
-
     val startImgScanTime: Long = System.currentTimeMillis()
+
+    val imgAdapter = ImgAdapter()
 
     var isPaused = false
 
@@ -36,7 +36,7 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
     lateinit var labelList: List<String>
 
-    private var isScanComplete: MutableLiveData<Boolean> = MutableLiveData()
+    private val isScanComplete: MutableLiveData<Boolean> = MutableLiveData()
 
     private val endImgScanTime: MutableLiveData<Long> = MutableLiveData()
 
@@ -53,7 +53,7 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
     private val imgListObserver: Observer<ImgEntity> by lazy {
         Observer<ImgEntity> {
             it?.let {
-                imgList.add(it)
+                imgAdapter.images.add(it)
             }
         }
     }
@@ -89,7 +89,6 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
         disposables.add(imgSubject.doOnNext { processImage(it, imageClassifier) }
                 .subscribeOn(Schedulers.computation())
-                .doOnComplete { onImgScanComplete() }
                 .subscribe())
 
         isImgScanStarted = true
@@ -106,8 +105,8 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
     fun initImgList(label: String) {
         executor.execute {
             db.imgDao().getImgs(label)?.let {
-                imgList = mutableListOf()
-                imgList.addAll(it)
+                imgAdapter.images = mutableListOf()
+                imgAdapter.images.addAll(it)
             }
             isScanComplete.postValue(false)
         }
@@ -115,8 +114,8 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
 
     fun initImgList() {
         executor.execute {
-            imgList = mutableListOf()
-            imgList.addAll(db.imgDao().getAll())
+            imgAdapter.images = mutableListOf()
+            imgAdapter.images.addAll(db.imgDao().getAll())
             updateLabels()
             isScanComplete.postValue(false)
         }
@@ -142,12 +141,6 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
                 endImgScanTime.postValue(System.currentTimeMillis())
             }
         }
-        imgSubject.onComplete()
-    }
-
-    private fun onImgScanComplete() {
-        updateLabels()
-        isScanComplete.postValue(true)
     }
 
     private fun processImage(file: File, imageClassifier: ImgClassifierImpl) {
