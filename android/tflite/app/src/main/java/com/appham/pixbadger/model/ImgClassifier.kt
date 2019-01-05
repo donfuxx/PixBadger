@@ -42,6 +42,6 @@ interface ImgClassifier {
     fun close()
 
     companion object {
-        const val VERSION: Int = 2
+        const val VERSION: Int = 3
     }
 }
