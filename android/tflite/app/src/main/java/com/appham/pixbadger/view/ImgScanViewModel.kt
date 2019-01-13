@@ -62,7 +62,15 @@ class ImgScanViewModel(application: Application) : AndroidViewModel(application)
         Room.databaseBuilder(
                 application,
                 ImgDataBase::class.java, "img_database"
-        ).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigration().build().apply {
+
+            // clean up all no longer existing files from db
+            for (img in imgDao().getAll()) {
+                if (!File(img.path).exists()) {
+                    imgDao().delete(img)
+                }
+            }
+        }
     }
 
     private val executor by lazy {
