@@ -107,7 +107,6 @@ abstract class ImgBaseFragment : Fragment() {
         when (item?.itemId) {
             R.id.action_menu_grid_view -> toggleGridView()
             R.id.action_menu_pause -> togglePause(item)
-            R.id.action_menu_open_folder -> openFolder()
         }
         return super.onOptionsItemSelected(item)
     }
