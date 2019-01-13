@@ -39,6 +39,13 @@ class ImgAdapter : RecyclerView.Adapter<ImgHolder>() {
             }
 
             val file = File(imgEntity.path)
+
+            // remove item if file doesn't exist anymore
+            if (!file.exists()) {
+                images.removeAt(position)
+                holder.imgItem.post { notifyItemRemoved(position) }
+            }
+
             Picasso.get().load(file)
                     .resize(Math.min(screenWidthPx / 2, screenHeightPx / 2),
                             Math.min(screenWidthPx / 4, screenHeightPx / 3))
