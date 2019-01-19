@@ -1,3 +1,5 @@
+# About the PixBadger Android Image Classification App
+
 This app was originally forked from the **Google TensorFlow codelab** (https://github.com/googlecodelabs/tensorflow-for-poets-2) but now it has diverged into something else:
 
 Most of the Python code related to training and optimizing the TensorFlow AI model is exactly like in Google's TensorFlow codelab. Just small modifications & some shell scripts for convenient retraining of the model.
