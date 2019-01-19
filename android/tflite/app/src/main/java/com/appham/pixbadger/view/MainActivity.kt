@@ -119,13 +119,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun isStoragePermissionGranted(): Boolean {
         return if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 Log.v(javaClass.name, "Storage permission is granted")
                 true
             } else {
                 Log.v(javaClass.name, "Storage permission is revoked")
                 ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                         STORAGE_PERMISSION_RC)
                 false
             }
